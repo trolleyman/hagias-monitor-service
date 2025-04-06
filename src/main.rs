@@ -28,8 +28,8 @@ pub enum Command {
 pub enum ConfigCommand {
     // Store the current monitor configuration as the config named `name`
     Store { id: String, name: String },
-    // Load the config with ID `id`
-    Load { id: String },
+    // Apply the config with ID `id`
+    Apply { id: String },
 }
 
 #[rocket::main]
@@ -58,7 +58,7 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
                 println!("Monitor config {} \"{}\" stored successfully", id, name);
                 Ok(Some(0))
             }
-            ConfigCommand::Load { id } => {
+            ConfigCommand::Apply { id } => {
                 let stored_config = load_monitor_config(&id).await?;
                 if let Some(stored_config) = stored_config {
                     println!(
@@ -67,7 +67,7 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
                     );
                     stored_config.display_config.set()?;
                     println!(
-                        "Monitor config {} \"{}\" set successfully",
+                        "Monitor config {} \"{}\" applied successfully",
                         stored_config.id, stored_config.name
                     );
                     Ok(Some(0))
@@ -107,6 +107,9 @@ pub async fn store_monitor_config(id: &str, name: &str) -> Result<()> {
     let path = get_display_config_path(id);
     if let Some(parent) = path.parent() {
         tokio::fs::create_dir_all(parent).await?;
+    }
+    if tokio::fs::try_exists(&path).await? {
+        println!("Overwriting monitor config {} \"{}\".", id, name);
     }
     let mut file = tokio::fs::File::create(path).await?;
     file.write_all(json.as_bytes()).await?;

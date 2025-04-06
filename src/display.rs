@@ -396,9 +396,50 @@ impl DisplayConfig {
     }
 
     pub fn to_windows(&self) -> Result<WindowsDisplayConfig> {
-        // let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
-        // // TODO: Implement
-        // Ok(windows_display_config)
+        let mut windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
+        let mut applier = DisplayConfigApplier::new(&mut windows_display_config, self);
+        applier.apply()?;
+        Ok(windows_display_config)
+    }
+}
+
+struct DisplayConfigApplier<'a> {
+    windows_display_config: &'a mut WindowsDisplayConfig,
+    display_config: &'a DisplayConfig,
+}
+
+impl<'a> DisplayConfigApplier<'a> {
+    pub fn new(
+        windows_display_config: &'a mut WindowsDisplayConfig,
+        display_config: &'a DisplayConfig,
+    ) -> Self {
+        Self {
+            windows_display_config,
+            display_config,
+        }
+    }
+
+    pub fn apply(&mut self) -> Result<()> {
+        for path in self.display_config.paths.iter() {
+            self.apply_path(path)?;
+        }
+        self.disable_unused_paths()?;
+        self.disable_unused_modes()?;
+        Ok(())
+    }
+
+    fn apply_path(&mut self, path: &DisplayPath) -> Result<()> {
+        let source_mode = &self.display_config.source_modes[path.source.source_mode_index];
+        let target_mode = &self.display_config.target_modes[path.target.target_mode_index];
+
+        todo!()
+    }
+
+    fn disable_unused_paths(&mut self) -> Result<()> {
+        todo!()
+    }
+
+    fn disable_unused_modes(&mut self) -> Result<()> {
         todo!()
     }
 }
