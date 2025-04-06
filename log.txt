@@ -1,3 +1,8 @@
+   Compiling hagias-monitor-service v0.1.0 (C:\code\2025\hagias-monitor-service)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.55s
+     Running `target\debug\hagias-monitor-service.exe config store tv TV`
+Getting current display configuration...
+Current display configuration:
 Display Mode #0
   ID: 41221
   Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1256,7 +1261,14 @@ Display Path #39
       Monitor Device Path: ""
   Flags: 0x0
 
-DisplayConfig {
+Converting to DisplayConfig...
+Serializing to JSON...
+Writing to display_config.json...
+Reading back display_config.json...
+Reading to end...
+Converting to string...
+Deserializing from JSON...
+DisplayConfig: DisplayConfig {
     source_modes: [
         DisplaySourceMode {
             width: 1920,
@@ -1300,8 +1312,8 @@ DisplayConfig {
                 ),
             },
             pixel_rate: 148500000,
-            h_sync_freq: Rational{148500000/2200},
-            v_sync_freq: Rational{60/1},
+            h_sync_freq: Rational(148500000/2200),
+            v_sync_freq: Rational(60/1),
             active_size: Region {
                 x: 1920,
                 y: 1080,
@@ -1338,8 +1350,8 @@ DisplayConfig {
                 ),
             },
             pixel_rate: 148500000,
-            h_sync_freq: Rational{148500000/2200},
-            v_sync_freq: Rational{60/1},
+            h_sync_freq: Rational(148500000/2200),
+            v_sync_freq: Rational(60/1),
             active_size: Region {
                 x: 1920,
                 y: 1080,
@@ -1365,7 +1377,7 @@ DisplayConfig {
                 output_technology: DisplayPortExternal,
                 rotation: Identity,
                 scaling: Identity,
-                refresh_rate: Rational{60/1},
+                refresh_rate: Rational(60/1),
                 scanline_ordering: Progressive,
             },
         },
@@ -1378,9 +1390,66 @@ DisplayConfig {
                 output_technology: Dvi,
                 rotation: Identity,
                 scaling: Identity,
-                refresh_rate: Rational{60/1},
+                refresh_rate: Rational(60/1),
                 scanline_ordering: Progressive,
             },
         },
     ],
 }
+Setting display configuration...
+
+thread 'main' panicked at src\display.rs:399:9:
+not yet implemented
+stack backtrace:
+   0: std::panicking::begin_panic_handler
+             at /rustc/920d95eaf23d7eb6b415d09868e4f793024fa604/library\std\src\panicking.rs:697
+   1: core::panicking::panic_fmt
+             at /rustc/920d95eaf23d7eb6b415d09868e4f793024fa604/library\core\src\panicking.rs:75
+   2: core::panicking::panic
+             at /rustc/920d95eaf23d7eb6b415d09868e4f793024fa604/library\core\src\panicking.rs:145
+   3: hagias_monitor_service::display::DisplayConfig::to_windows
+             at .\src\display.rs:399
+   4: hagias_monitor_service::display::DisplayConfig::set
+             at .\src\display.rs:388
+   5: hagias_monitor_service::store_monitor_config::async_fn$0
+             at .\src\main.rs:107
+   6: hagias_monitor_service::run_command::async_fn$0
+             at .\src\main.rs:58
+   7: hagias_monitor_service::run::async_fn$0
+             at .\src\main.rs:45
+   8: hagias_monitor_service::main::async_block$0
+             at .\src\main.rs:32
+   9: core::future::future::impl$1::poll<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> >
+             at C:\Users\ctoll\.rustup\toolchains\nightly-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\core\src\future\future.rs:124
+  10: tokio::runtime::park::impl$4::block_on::closure$0<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\park.rs:284
+  11: tokio::task::coop::with_budget
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\task\coop\mod.rs:167
+  12: tokio::task::coop::budget
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\task\coop\mod.rs:133
+  13: tokio::runtime::park::CachedParkThread::block_on<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\park.rs:284
+  14: tokio::runtime::context::blocking::BlockingRegionGuard::block_on<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\context\blocking.rs:66
+  15: tokio::runtime::scheduler::multi_thread::impl$0::block_on::closure$0<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\scheduler\multi_thread\mod.rs:87
+  16: tokio::runtime::context::runtime::enter_runtime<tokio::runtime::scheduler::multi_thread::impl$0::block_on::closure_env$0<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >,tuple$<> >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\context\runtime.rs:65
+  17: tokio::runtime::scheduler::multi_thread::MultiThread::block_on<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\scheduler\multi_thread\mod.rs:86
+  18: tokio::runtime::runtime::Runtime::block_on_inner<core::pin::Pin<alloc::boxed::Box<enum2$<hagias_monitor_service::main::async_block_env$0>,alloc::alloc::Global> > >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\runtime.rs:370
+  19: tokio::runtime::runtime::Runtime::block_on<enum2$<hagias_monitor_service::main::async_block_env$0> >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.44.2\src\runtime\runtime.rs:340
+  20: rocket::async_run<enum2$<hagias_monitor_service::main::async_block_env$0>,tuple$<> >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rocket-0.5.1\src\lib.rs:250
+  21: rocket::async_main<tuple$<>,enum2$<hagias_monitor_service::main::async_block_env$0> >
+             at C:\Users\ctoll\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\rocket-0.5.1\src\lib.rs:282
+  22: hagias_monitor_service::main
+             at .\src\main.rs:31
+  23: core::ops::function::FnOnce::call_once<void (*)(),tuple$<> >
+             at C:\Users\ctoll\.rustup\toolchains\nightly-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\core\src\ops\function.rs:250
+  24: core::hint::black_box
+             at C:\Users\ctoll\.rustup\toolchains\nightly-x86_64-pc-windows-msvc\lib\rustlib\src\rust\library\core\src\hint.rs:477
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+error: process didn't exit successfully: `target\debug\hagias-monitor-service.exe config store tv TV` (exit code: 101)

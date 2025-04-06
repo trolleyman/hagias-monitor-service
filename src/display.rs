@@ -7,17 +7,18 @@ use std::{
 };
 
 use anyhow::{Result, bail};
+use serde::{Deserialize, Serialize};
 use unit_enum::UnitEnum;
 use windows::{
     Wdk::Graphics::Direct3D::{
-        D3DKMDT_VSS_APPLE, D3DKMDT_VSS_EIA_861, D3DKMDT_VSS_EIA_861A, D3DKMDT_VSS_EIA_861B,
-        D3DKMDT_VSS_IBM, D3DKMDT_VSS_NTSC_443, D3DKMDT_VSS_NTSC_J, D3DKMDT_VSS_NTSC_M,
-        D3DKMDT_VSS_OTHER, D3DKMDT_VSS_PAL_B, D3DKMDT_VSS_PAL_B1, D3DKMDT_VSS_PAL_D,
-        D3DKMDT_VSS_PAL_G, D3DKMDT_VSS_PAL_H, D3DKMDT_VSS_PAL_I, D3DKMDT_VSS_PAL_K,
-        D3DKMDT_VSS_PAL_K1, D3DKMDT_VSS_PAL_L, D3DKMDT_VSS_PAL_M, D3DKMDT_VSS_PAL_N,
-        D3DKMDT_VSS_PAL_NC, D3DKMDT_VSS_SECAM_B, D3DKMDT_VSS_SECAM_D, D3DKMDT_VSS_SECAM_G,
-        D3DKMDT_VSS_SECAM_H, D3DKMDT_VSS_SECAM_K, D3DKMDT_VSS_SECAM_K1, D3DKMDT_VSS_SECAM_L,
-        D3DKMDT_VSS_SECAM_L1, D3DKMDT_VSS_UNINITIALIZED, D3DKMDT_VSS_VESA_CVT,
+        D3DKMDT_VIDEO_SIGNAL_STANDARD, D3DKMDT_VSS_APPLE, D3DKMDT_VSS_EIA_861,
+        D3DKMDT_VSS_EIA_861A, D3DKMDT_VSS_EIA_861B, D3DKMDT_VSS_IBM, D3DKMDT_VSS_NTSC_443,
+        D3DKMDT_VSS_NTSC_J, D3DKMDT_VSS_NTSC_M, D3DKMDT_VSS_PAL_B, D3DKMDT_VSS_PAL_B1,
+        D3DKMDT_VSS_PAL_D, D3DKMDT_VSS_PAL_G, D3DKMDT_VSS_PAL_H, D3DKMDT_VSS_PAL_I,
+        D3DKMDT_VSS_PAL_K, D3DKMDT_VSS_PAL_K1, D3DKMDT_VSS_PAL_L, D3DKMDT_VSS_PAL_M,
+        D3DKMDT_VSS_PAL_N, D3DKMDT_VSS_PAL_NC, D3DKMDT_VSS_SECAM_B, D3DKMDT_VSS_SECAM_D,
+        D3DKMDT_VSS_SECAM_G, D3DKMDT_VSS_SECAM_H, D3DKMDT_VSS_SECAM_K, D3DKMDT_VSS_SECAM_K1,
+        D3DKMDT_VSS_SECAM_L, D3DKMDT_VSS_SECAM_L1, D3DKMDT_VSS_UNINITIALIZED, D3DKMDT_VSS_VESA_CVT,
         D3DKMDT_VSS_VESA_DMT, D3DKMDT_VSS_VESA_GTF,
     },
     Win32::{
@@ -277,7 +278,7 @@ impl DisplayConfigBuilder {
                     v_sync_freq: signal_info.vSyncFreq.into(),
                     active_size: signal_info.activeSize.into(),
                     total_size: signal_info.totalSize.into(),
-                    video_standard: VideoStandard::from_discriminant(video_standard),
+                    video_standard: video_standard.into(),
                     v_sync_freq_divider,
                     scanline_ordering: signal_info.scanLineOrdering.into(),
                 };
@@ -370,7 +371,7 @@ impl DisplayConfigBuilder {
 }
 
 /// All active display modes and paths, that can be serialized and restored later.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayConfig {
     pub source_modes: Vec<DisplaySourceMode>,
     pub target_modes: Vec<DisplayTargetMode>,
@@ -381,6 +382,11 @@ impl DisplayConfig {
     pub fn get() -> Result<Self> {
         let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::Active)?;
         Self::from_windows(&windows_display_config)
+    }
+
+    pub fn set(&self) -> Result<()> {
+        let windows_display_config = self.to_windows()?;
+        windows_display_config.set()
     }
 
     pub fn from_windows(windows_display_config: &WindowsDisplayConfig) -> Result<Self> {
@@ -394,8 +400,9 @@ impl DisplayConfig {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Adapter {
+    #[serde(with = "crate::serde_override::os_string")]
     pub device_instance_path: OsString,
 }
 impl Adapter {
@@ -408,7 +415,7 @@ impl Adapter {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayTargetDevice {
     pub id: u32,
     pub adapter: Adapter,
@@ -416,11 +423,13 @@ pub struct DisplayTargetDevice {
     pub edid_manufacture_id: Option<u16>,
     pub edid_product_code_id: Option<u16>,
     pub connector_instance: u32,
+    #[serde(with = "crate::serde_override::option_os_string")]
     pub monitor_friendly_device_name: Option<OsString>,
+    #[serde(with = "crate::serde_override::option_os_string")]
     pub monitor_device_path: Option<OsString>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayTargetMode {
     pub device: DisplayTargetDevice,
     pub pixel_rate: u64,
@@ -433,7 +442,7 @@ pub struct DisplayTargetMode {
     pub scanline_ordering: ScanlineOrdering,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplaySourceMode {
     pub width: u32,
     pub height: u32,
@@ -441,18 +450,18 @@ pub struct DisplaySourceMode {
     pub position: Point,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayPath {
     pub source: DisplayPathSource,
     pub target: DisplayPathTarget,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayPathSource {
     pub source_mode_index: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayPathTarget {
     pub target_mode_index: usize,
     pub output_technology: OutputTechnology,
@@ -1098,7 +1107,8 @@ pub fn format_rational_frequency(rational: DISPLAYCONFIG_RATIONAL) -> String {
 }
 
 /// The target's connector type.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum, Serialize, Deserialize)]
+#[serde(from = "i32", into = "i32")]
 #[repr(i32)]
 pub enum OutputTechnology {
     /// Indicates an HD15 (VGA) connector.
@@ -1147,17 +1157,29 @@ pub enum OutputTechnology {
 
 impl From<DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY> for OutputTechnology {
     fn from(value: DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY) -> Self {
-        OutputTechnology::from_discriminant(value.0)
+        OutputTechnology::from(value.0)
     }
 }
 
 impl From<OutputTechnology> for DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY {
     fn from(value: OutputTechnology) -> Self {
-        DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY(value.discriminant())
+        DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY(value.into())
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+impl From<i32> for OutputTechnology {
+    fn from(value: i32) -> Self {
+        OutputTechnology::from_discriminant(value)
+    }
+}
+
+impl From<OutputTechnology> for i32 {
+    fn from(value: OutputTechnology) -> Self {
+        value.discriminant()
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rational {
     numerator: u32,
     denominator: u32,
@@ -1188,7 +1210,7 @@ impl From<Rational> for DISPLAYCONFIG_RATIONAL {
 }
 
 /// A point or an offset in a two-dimensional space
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Region {
     pub x: u32,
     pub y: u32,
@@ -1213,7 +1235,7 @@ impl From<Region> for DISPLAYCONFIG_2DREGION {
 }
 
 /// A point in a two-dimensional space
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
@@ -1238,7 +1260,8 @@ impl From<Point> for POINTL {
 }
 
 /// The clockwise rotation of the display.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum, Serialize, Deserialize)]
+#[serde(from = "i32", into = "i32")]
 #[repr(i32)]
 pub enum DisplayRotation {
     /// Indicates that rotation is 0 degrees—landscape mode.
@@ -1255,18 +1278,31 @@ pub enum DisplayRotation {
 
 impl From<DISPLAYCONFIG_ROTATION> for DisplayRotation {
     fn from(value: DISPLAYCONFIG_ROTATION) -> Self {
-        DisplayRotation::from_discriminant(value.0)
+        DisplayRotation::from(value.0)
     }
 }
 
 impl From<DisplayRotation> for DISPLAYCONFIG_ROTATION {
     fn from(value: DisplayRotation) -> Self {
-        DISPLAYCONFIG_ROTATION(value.discriminant())
+        DISPLAYCONFIG_ROTATION(value.into())
+    }
+}
+
+impl From<i32> for DisplayRotation {
+    fn from(value: i32) -> Self {
+        DisplayRotation::from_discriminant(value)
+    }
+}
+
+impl From<DisplayRotation> for i32 {
+    fn from(value: DisplayRotation) -> Self {
+        value.discriminant()
     }
 }
 
 // The scaling transformation applied to content displayed on a video present network (VidPN) present path.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum, Serialize, Deserialize)]
+#[serde(from = "i32", into = "i32")]
 #[repr(i32)]
 pub enum DisplayScaling {
     /// Indicates the identity transformation; the source content is presented with no change. This transformation is available only if the path's source mode has the same spatial resolution as the path's target mode.
@@ -1287,17 +1323,30 @@ pub enum DisplayScaling {
 
 impl From<DISPLAYCONFIG_SCALING> for DisplayScaling {
     fn from(value: DISPLAYCONFIG_SCALING) -> Self {
-        DisplayScaling::from_discriminant(value.0)
+        DisplayScaling::from(value.0)
     }
 }
 
 impl From<DisplayScaling> for DISPLAYCONFIG_SCALING {
     fn from(value: DisplayScaling) -> Self {
-        DISPLAYCONFIG_SCALING(value.discriminant())
+        DISPLAYCONFIG_SCALING(value.into())
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum)]
+impl From<i32> for DisplayScaling {
+    fn from(value: i32) -> Self {
+        DisplayScaling::from_discriminant(value)
+    }
+}
+
+impl From<DisplayScaling> for i32 {
+    fn from(value: DisplayScaling) -> Self {
+        value.discriminant()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum, Serialize, Deserialize)]
+#[serde(from = "i32", into = "i32")]
 #[repr(i32)]
 pub enum VideoStandard {
     /// Uninitialized.
@@ -1369,8 +1418,33 @@ pub enum VideoStandard {
     Other(i32),
 }
 
+impl From<D3DKMDT_VIDEO_SIGNAL_STANDARD> for VideoStandard {
+    fn from(value: D3DKMDT_VIDEO_SIGNAL_STANDARD) -> Self {
+        VideoStandard::from(value.0)
+    }
+}
+
+impl From<VideoStandard> for D3DKMDT_VIDEO_SIGNAL_STANDARD {
+    fn from(value: VideoStandard) -> Self {
+        D3DKMDT_VIDEO_SIGNAL_STANDARD(value.into())
+    }
+}
+
+impl From<i32> for VideoStandard {
+    fn from(value: i32) -> Self {
+        VideoStandard::from_discriminant(value)
+    }
+}
+
+impl From<VideoStandard> for i32 {
+    fn from(value: VideoStandard) -> Self {
+        value.discriminant()
+    }
+}
+
 /// The method that the display uses to create an image on a screen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum, Serialize, Deserialize)]
+#[serde(from = "i32", into = "i32")]
 #[repr(i32)]
 pub enum ScanlineOrdering {
     /// Scan-line ordering of the output is unspecified.
@@ -1399,18 +1473,31 @@ pub const INTERLACED: ScanlineOrdering = if DISPLAYCONFIG_SCANLINE_ORDERING_INTE
 
 impl From<DISPLAYCONFIG_SCANLINE_ORDERING> for ScanlineOrdering {
     fn from(value: DISPLAYCONFIG_SCANLINE_ORDERING) -> Self {
-        ScanlineOrdering::from_discriminant(value.0)
+        ScanlineOrdering::from(value.0)
     }
 }
 
 impl From<ScanlineOrdering> for DISPLAYCONFIG_SCANLINE_ORDERING {
     fn from(value: ScanlineOrdering) -> Self {
-        DISPLAYCONFIG_SCANLINE_ORDERING(value.discriminant())
+        DISPLAYCONFIG_SCANLINE_ORDERING(value.into())
+    }
+}
+
+impl From<i32> for ScanlineOrdering {
+    fn from(value: i32) -> Self {
+        ScanlineOrdering::from_discriminant(value)
+    }
+}
+
+impl From<ScanlineOrdering> for i32 {
+    fn from(value: ScanlineOrdering) -> Self {
+        value.discriminant()
     }
 }
 
 /// The pixel format of the display.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, UnitEnum, Serialize, Deserialize)]
+#[serde(from = "i32", into = "i32")]
 #[repr(i32)]
 pub enum PixelFormat {
     /// 8 BPP format.
@@ -1429,13 +1516,25 @@ pub enum PixelFormat {
 
 impl From<DISPLAYCONFIG_PIXELFORMAT> for PixelFormat {
     fn from(value: DISPLAYCONFIG_PIXELFORMAT) -> Self {
-        PixelFormat::from_discriminant(value.0)
+        PixelFormat::from(value.0)
     }
 }
 
 impl From<PixelFormat> for DISPLAYCONFIG_PIXELFORMAT {
     fn from(value: PixelFormat) -> Self {
-        DISPLAYCONFIG_PIXELFORMAT(value.discriminant())
+        DISPLAYCONFIG_PIXELFORMAT(value.into())
+    }
+}
+
+impl From<i32> for PixelFormat {
+    fn from(value: i32) -> Self {
+        PixelFormat::from_discriminant(value)
+    }
+}
+
+impl From<PixelFormat> for i32 {
+    fn from(value: PixelFormat) -> Self {
+        value.discriminant()
     }
 }
 
