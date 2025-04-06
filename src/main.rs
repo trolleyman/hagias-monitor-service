@@ -55,7 +55,7 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
 
 pub async fn store_monitor_config(_id: &str, _name: &str) -> Result<()> {
     let windows_display_config =
-        display::WindowsDisplayConfig::get(display::DisplayQueryType::Active)?;
+        display::WindowsDisplayConfig::get(display::DisplayQueryType::All)?;
     windows_display_config.print();
 
     // windows_display_config.set()?;

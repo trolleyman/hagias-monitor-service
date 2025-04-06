@@ -281,6 +281,10 @@ impl WindowsDisplayConfig {
                         "      Scanline Ordering: {:?}",
                         target_mode.targetVideoSignalInfo.scanLineOrdering
                     );
+                    self.print_target_device(&IdAndAdapterId {
+                        id: mode.id,
+                        adapter_id: LuidWrapper(mode.adapterId),
+                    });
                 }
                 DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE => {
                     let source_mode = mode.Anonymous.sourceMode;
@@ -456,10 +460,14 @@ impl WindowsDisplayConfig {
         {
             println!("      DISPLAYCONFIG_TARGET_IS_HMD");
         }
-        if let Some(target_device_name) = self.target_device_names.get(&IdAndAdapterId {
+        self.print_target_device(&IdAndAdapterId {
             id: path.targetInfo.id,
-            adapter_id: path.targetInfo.adapterId.into(),
-        }) {
+            adapter_id: LuidWrapper(path.targetInfo.adapterId),
+        });
+    }
+
+    fn print_target_device(&self, id_and_adapter_id: &IdAndAdapterId) {
+        if let Some(target_device_name) = self.target_device_names.get(id_and_adapter_id) {
             println!("    Target Device:");
             println!("      Flags: 0x{:x}", unsafe {
                 target_device_name.flags.Anonymous.value
