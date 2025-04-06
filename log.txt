@@ -31,6 +31,8 @@ Display Mode #1
     Height: 1080
     Pixel Format: DISPLAYCONFIG_PIXELFORMAT(4)
     Position: POINTL { x: 0, y: 0 }
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
 
 Display Mode #2
   ID: 41217
@@ -65,6 +67,8 @@ Display Mode #3
     Height: 1080
     Pixel Format: DISPLAYCONFIG_PIXELFORMAT(4)
     Position: POINTL { x: -1920, y: 0 }
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
 
 Display Path #0
   Source:
@@ -73,6 +77,8 @@ Display Path #0
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41221
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -105,6 +111,8 @@ Display Path #1
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41217
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -137,6 +145,8 @@ Display Path #2
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41217
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -167,6 +177,8 @@ Display Path #3
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41217
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -197,6 +209,8 @@ Display Path #4
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41217
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -228,6 +242,8 @@ Display Path #5
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41218
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -258,6 +274,8 @@ Display Path #6
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41218
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -287,6 +305,8 @@ Display Path #7
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41218
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -316,6 +336,8 @@ Display Path #8
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41218
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -346,6 +368,8 @@ Display Path #9
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41219
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -373,6 +397,8 @@ Display Path #10
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41219
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -399,6 +425,8 @@ Display Path #11
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41219
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -425,6 +453,8 @@ Display Path #12
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41219
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -452,6 +482,8 @@ Display Path #13
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41220
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -479,6 +511,8 @@ Display Path #14
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41220
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -505,6 +539,8 @@ Display Path #15
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41220
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -531,6 +567,8 @@ Display Path #16
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41220
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -558,6 +596,8 @@ Display Path #17
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41221
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -588,6 +628,8 @@ Display Path #18
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41221
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -618,6 +660,8 @@ Display Path #19
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41221
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -649,6 +693,8 @@ Display Path #20
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41222
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -676,6 +722,8 @@ Display Path #21
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41222
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -702,6 +750,8 @@ Display Path #22
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41222
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -728,6 +778,8 @@ Display Path #23
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41222
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -755,6 +807,8 @@ Display Path #24
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41984
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -782,6 +836,8 @@ Display Path #25
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41984
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -808,6 +864,8 @@ Display Path #26
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41984
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -834,6 +892,8 @@ Display Path #27
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41984
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -861,6 +921,8 @@ Display Path #28
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41985
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -888,6 +950,8 @@ Display Path #29
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41985
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -914,6 +978,8 @@ Display Path #30
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41985
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -940,6 +1006,8 @@ Display Path #31
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41985
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -967,6 +1035,8 @@ Display Path #32
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41986
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -994,6 +1064,8 @@ Display Path #33
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41986
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1020,6 +1092,8 @@ Display Path #34
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41986
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1046,6 +1120,8 @@ Display Path #35
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41986
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1073,6 +1149,8 @@ Display Path #36
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41987
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1100,6 +1178,8 @@ Display Path #37
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41987
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1126,6 +1206,8 @@ Display Path #38
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41987
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
@@ -1152,6 +1234,8 @@ Display Path #39
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
+    Source Device:
+      GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41987
     Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
