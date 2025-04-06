@@ -9,6 +9,7 @@ use anyhow::{Result, bail};
 use windows::{
     Win32::{
         Devices::Display::{
+            DISPLAYCONFIG_ADAPTER_NAME, DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME,
             DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME, DISPLAYCONFIG_DEVICE_INFO_HEADER,
             DISPLAYCONFIG_MODE_INFO, DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE,
             DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE, DISPLAYCONFIG_MODE_INFO_TYPE_TARGET,
@@ -82,22 +83,36 @@ impl DisplayQueryType {
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub struct IdAndAdapterId {
-    pub id: u32,
-    pub adapter_id: windows::Win32::Foundation::LUID,
-}
-impl Hash for IdAndAdapterId {
+#[repr(transparent)]
+pub struct LuidWrapper(windows::Win32::Foundation::LUID);
+impl Hash for LuidWrapper {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.id.hash(state);
-        self.adapter_id.LowPart.hash(state);
-        self.adapter_id.HighPart.hash(state);
+        self.0.LowPart.hash(state);
+        self.0.HighPart.hash(state);
     }
 }
-impl Eq for IdAndAdapterId {}
+impl Eq for LuidWrapper {}
+impl From<windows::Win32::Foundation::LUID> for LuidWrapper {
+    fn from(luid: windows::Win32::Foundation::LUID) -> Self {
+        LuidWrapper(luid)
+    }
+}
+impl From<LuidWrapper> for windows::Win32::Foundation::LUID {
+    fn from(luid: LuidWrapper) -> Self {
+        luid.0
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub struct IdAndAdapterId {
+    pub id: u32,
+    pub adapter_id: LuidWrapper,
+}
 
 pub struct WindowsDisplayConfig {
     pub paths: Vec<DISPLAYCONFIG_PATH_INFO>,
     pub modes: Vec<DISPLAYCONFIG_MODE_INFO>,
+    pub adapter_device_names: HashMap<LuidWrapper, OsString>,
     pub target_device_names: HashMap<IdAndAdapterId, DISPLAYCONFIG_TARGET_DEVICE_NAME>,
 }
 
@@ -153,11 +168,25 @@ impl WindowsDisplayConfig {
                 paths.set_len(num_paths as usize);
                 modes.set_len(num_modes as usize);
 
+                let mut adapter_device_names = HashMap::new();
+                for adapter_id in modes.iter().map(|m| m.adapterId).chain(
+                    paths
+                        .iter()
+                        .flat_map(|path| [path.sourceInfo.adapterId, path.targetInfo.adapterId]),
+                ) {
+                    match adapter_device_names.entry(LuidWrapper(adapter_id)) {
+                        hash_map::Entry::Vacant(entry) => {
+                            entry.insert(get_adapter_device_name(adapter_id)?);
+                        }
+                        hash_map::Entry::Occupied(_) => {}
+                    }
+                }
+
                 let mut target_device_names = HashMap::new();
                 for path in paths.iter() {
                     let key = IdAndAdapterId {
                         id: path.targetInfo.id,
-                        adapter_id: path.targetInfo.adapterId,
+                        adapter_id: LuidWrapper(path.targetInfo.adapterId),
                     };
                     match target_device_names.entry(key) {
                         hash_map::Entry::Vacant(entry) => {
@@ -173,6 +202,7 @@ impl WindowsDisplayConfig {
                 return Ok(WindowsDisplayConfig {
                     paths,
                     modes,
+                    adapter_device_names,
                     target_device_names,
                 });
             }
@@ -205,10 +235,17 @@ impl WindowsDisplayConfig {
         }
     }
 
+    fn format_adapter_id(&self, adapter_id: windows::Win32::Foundation::LUID) -> String {
+        match self.adapter_device_names.get(&LuidWrapper(adapter_id)) {
+            Some(name) => format!("{:?} {:?}", adapter_id, name),
+            None => format!("{:?}", adapter_id),
+        }
+    }
+
     fn print_mode(&self, i: usize, mode: &DISPLAYCONFIG_MODE_INFO) {
         println!("Display Mode #{}", i);
         println!("  ID: {:?}", mode.id);
-        println!("  Adapter ID: {:?}", mode.adapterId);
+        println!("  Adapter ID: {}", self.format_adapter_id(mode.adapterId));
         println!("  Info Type: {:?}", mode.infoType);
         unsafe {
             match mode.infoType {
@@ -296,7 +333,10 @@ impl WindowsDisplayConfig {
     fn print_path_source(&self, path: &DISPLAYCONFIG_PATH_INFO) {
         println!("  Source:");
         println!("    ID: {}", path.sourceInfo.id);
-        println!("    Adapter ID: {:?}", path.sourceInfo.adapterId);
+        println!(
+            "    Adapter ID: {}",
+            self.format_adapter_id(path.sourceInfo.adapterId)
+        );
         unsafe {
             if path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE
                 == DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE
@@ -336,7 +376,10 @@ impl WindowsDisplayConfig {
     fn print_path_target(&self, path: &DISPLAYCONFIG_PATH_INFO) {
         println!("  Target:");
         println!("    ID: {}", path.targetInfo.id);
-        println!("    Adapter ID: {:?}", path.targetInfo.adapterId);
+        println!(
+            "    Adapter ID: {}",
+            self.format_adapter_id(path.targetInfo.adapterId)
+        );
         unsafe {
             if path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE
                 == DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE
@@ -415,7 +458,7 @@ impl WindowsDisplayConfig {
         }
         if let Some(target_device_name) = self.target_device_names.get(&IdAndAdapterId {
             id: path.targetInfo.id,
-            adapter_id: path.targetInfo.adapterId,
+            adapter_id: path.targetInfo.adapterId.into(),
         }) {
             println!("    Target Device:");
             println!("      Flags: 0x{:x}", unsafe {
@@ -481,6 +524,37 @@ pub fn is_target_device_edid_ids_valid(flags: DISPLAYCONFIG_TARGET_DEVICE_NAME_F
 pub fn wchar_null_terminated_to_os_string(wchar: &[u16]) -> OsString {
     let len = wchar.iter().position(|&c| c == 0).unwrap_or(wchar.len());
     OsString::from_wide(&wchar[..len])
+}
+
+pub fn get_adapter_device_name(adapter_id: windows::Win32::Foundation::LUID) -> Result<OsString> {
+    let mut device_name = DISPLAYCONFIG_ADAPTER_NAME {
+        header: DISPLAYCONFIG_DEVICE_INFO_HEADER {
+            r#type: DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME,
+            size: std::mem::size_of::<DISPLAYCONFIG_ADAPTER_NAME>()
+                .try_into()
+                .map_err(|e| {
+                    anyhow::anyhow!(
+                        "Failed to convert size of DISPLAYCONFIG_ADAPTER_NAME to u32: {}",
+                        e
+                    )
+                })?,
+            adapterId: adapter_id,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    unsafe {
+        let result = DisplayConfigGetDeviceInfo(&mut device_name.header as *mut _);
+        if result != ERROR_SUCCESS.0 as i32 {
+            bail!(
+                "DisplayConfigGetDeviceInfo error: {}",
+                windows_error_to_string(WIN32_ERROR(result as u32)).display()
+            );
+        }
+    }
+    Ok(wchar_null_terminated_to_os_string(
+        &device_name.adapterDevicePath,
+    ))
 }
 
 pub fn get_target_device_name(
