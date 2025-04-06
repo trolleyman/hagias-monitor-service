@@ -5,8 +5,10 @@ edition = "2024"
 
 [dependencies]
 anyhow = { version = "1.0.97", features = ["backtrace"] }
+bitflags = "2.9.0"
 clap = { version = "4.5.34", features = ['derive'] }
 rocket = "0.5.1"
+unit-enum = "1.4.1"
 winapi = { version = "0.3.9", features = ["winnt"] }
 windows = { version = "0.61.1", features = [
     "Win32_Devices_Display",

@@ -486,8 +486,10 @@ name = "hagias-monitor-service"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bitflags",
  "clap",
  "rocket",
+ "unit-enum",
  "winapi",
  "windows 0.61.1",
 ]
@@ -1498,6 +1500,17 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
+
+[[package]]
+name = "unit-enum"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d77ff5f6c5bdc45f4959b6ecc97215e1d9439e1ea9a9ac1499cf5f8e5901a40a"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "utf8parse"
