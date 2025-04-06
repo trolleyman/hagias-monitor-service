@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 
 use clap::Parser;
+use display::DisplayConfig;
 
 pub mod display;
 
@@ -59,6 +60,9 @@ pub async fn store_monitor_config(_id: &str, _name: &str) -> Result<()> {
     windows_display_config.print();
 
     // windows_display_config.set()?;
+
+    let display_config = DisplayConfig::from_windows(&windows_display_config)?;
+    println!("{:#?}", display_config);
 
     Ok(())
 }

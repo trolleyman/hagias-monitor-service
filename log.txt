@@ -1,6 +1,6 @@
 Display Mode #0
   ID: 41221
-  Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+  Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
   Info Type: DISPLAYCONFIG_MODE_INFO_TYPE(2)
   Target Mode:
     Video Signal Info:
@@ -15,7 +15,7 @@ Display Mode #0
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       EDID Manufacture ID: 0xc41
       EDID Product Code ID: 0xc155
       Connector Instance: 2
@@ -23,8 +23,8 @@ Display Mode #0
       Monitor Device Path: "\\\\?\\DISPLAY#PHLC155#5&d10ba6e&0&UID41221#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}"
 
 Display Mode #1
-  ID: 1
-  Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+  ID: 0
+  Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
   Info Type: DISPLAYCONFIG_MODE_INFO_TYPE(1)
   Source Mode:
     Width: 1920
@@ -32,11 +32,11 @@ Display Mode #1
     Pixel Format: DISPLAYCONFIG_PIXELFORMAT(4)
     Position: POINTL { x: 0, y: 0 }
     Source Device:
-      GDI Device Name: "\\\\.\\DISPLAY2"
+      GDI Device Name: "\\\\.\\DISPLAY1"
 
 Display Mode #2
   ID: 41217
-  Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+  Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
   Info Type: DISPLAYCONFIG_MODE_INFO_TYPE(2)
   Target Mode:
     Video Signal Info:
@@ -51,7 +51,7 @@ Display Mode #2
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DVI
+      Output Technology: Dvi
       EDID Manufacture ID: 0xe305
       EDID Product Code ID: 0x2470
       Connector Instance: 0
@@ -59,8 +59,8 @@ Display Mode #2
       Monitor Device Path: "\\\\?\\DISPLAY#AOC2470#5&d10ba6e&0&UID41217#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}"
 
 Display Mode #3
-  ID: 0
-  Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+  ID: 1
+  Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
   Info Type: DISPLAYCONFIG_MODE_INFO_TYPE(1)
   Source Mode:
     Width: 1920
@@ -68,22 +68,22 @@ Display Mode #3
     Pixel Format: DISPLAYCONFIG_PIXELFORMAT(4)
     Position: POINTL { x: -1920, y: 0 }
     Source Device:
-      GDI Device Name: "\\\\.\\DISPLAY1"
+      GDI Device Name: "\\\\.\\DISPLAY2"
 
 Display Path #0
   Source:
-    ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    ID: 0
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
-      GDI Device Name: "\\\\.\\DISPLAY2"
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41221
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 1
-    Output Technology: DisplayPort External
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(1)
     Refresh Rate: 60Hz
@@ -95,7 +95,7 @@ Display Path #0
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       EDID Manufacture ID: 0xc41
       EDID Product Code ID: 0xc155
       Connector Instance: 2
@@ -106,18 +106,18 @@ Display Path #0
 
 Display Path #1
   Source:
-    ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    ID: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
-      GDI Device Name: "\\\\.\\DISPLAY1"
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41217
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 3
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(1)
     Refresh Rate: 60Hz
@@ -129,7 +129,7 @@ Display Path #1
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DVI
+      Output Technology: Dvi
       EDID Manufacture ID: 0xe305
       EDID Product Code ID: 0x2470
       Connector Instance: 0
@@ -140,18 +140,18 @@ Display Path #1
 
 Display Path #2
   Source:
-    ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    ID: 0
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
-      GDI Device Name: "\\\\.\\DISPLAY2"
+      GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41217
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 1
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -163,7 +163,7 @@ Display Path #2
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DVI
+      Output Technology: Dvi
       EDID Manufacture ID: 0xe305
       EDID Product Code ID: 0x2470
       Connector Instance: 0
@@ -174,16 +174,16 @@ Display Path #2
 Display Path #3
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41217
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -195,7 +195,7 @@ Display Path #3
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DVI
+      Output Technology: Dvi
       EDID Manufacture ID: 0xe305
       EDID Product Code ID: 0x2470
       Connector Instance: 0
@@ -206,16 +206,16 @@ Display Path #3
 Display Path #4
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41217
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -227,7 +227,7 @@ Display Path #4
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DVI
+      Output Technology: Dvi
       EDID Manufacture ID: 0xe305
       EDID Product Code ID: 0x2470
       Connector Instance: 0
@@ -238,17 +238,17 @@ Display Path #4
 Display Path #5
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41218
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: HDMI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Hdmi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -259,7 +259,7 @@ Display Path #5
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: HDMI
+      Output Technology: Hdmi
       EDID Manufacture ID: 0x6d1e
       EDID Product Code ID: 0x1
       Connector Instance: 0
@@ -270,17 +270,17 @@ Display Path #5
 Display Path #6
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41218
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: HDMI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Hdmi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -291,7 +291,7 @@ Display Path #6
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: HDMI
+      Output Technology: Hdmi
       EDID Manufacture ID: 0x6d1e
       EDID Product Code ID: 0x1
       Connector Instance: 0
@@ -302,16 +302,16 @@ Display Path #6
 Display Path #7
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41218
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: HDMI
+    Output Technology: Hdmi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -322,7 +322,7 @@ Display Path #7
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: HDMI
+      Output Technology: Hdmi
       EDID Manufacture ID: 0x6d1e
       EDID Product Code ID: 0x1
       Connector Instance: 0
@@ -333,16 +333,16 @@ Display Path #7
 Display Path #8
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41218
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: HDMI
+    Output Technology: Hdmi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -353,7 +353,7 @@ Display Path #8
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: HDMI
+      Output Technology: Hdmi
       EDID Manufacture ID: 0x6d1e
       EDID Product Code ID: 0x1
       Connector Instance: 0
@@ -364,17 +364,17 @@ Display Path #8
 Display Path #9
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41219
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DisplayPort External
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -384,7 +384,7 @@ Display Path #9
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -393,17 +393,17 @@ Display Path #9
 Display Path #10
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41219
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DisplayPort External
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -413,7 +413,7 @@ Display Path #10
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -422,16 +422,16 @@ Display Path #10
 Display Path #11
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41219
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DisplayPort External
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -441,7 +441,7 @@ Display Path #11
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -450,16 +450,16 @@ Display Path #11
 Display Path #12
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41219
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DisplayPort External
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -469,7 +469,7 @@ Display Path #12
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -478,17 +478,17 @@ Display Path #12
 Display Path #13
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41220
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -498,7 +498,7 @@ Display Path #13
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -507,17 +507,17 @@ Display Path #13
 Display Path #14
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41220
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -527,7 +527,7 @@ Display Path #14
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -536,16 +536,16 @@ Display Path #14
 Display Path #15
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41220
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -555,7 +555,7 @@ Display Path #15
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -564,16 +564,16 @@ Display Path #15
 Display Path #16
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41220
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -583,7 +583,7 @@ Display Path #16
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 1
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -591,18 +591,18 @@ Display Path #16
 
 Display Path #17
   Source:
-    ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    ID: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
-      GDI Device Name: "\\\\.\\DISPLAY1"
+      GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41221
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: 3
-    Output Technology: DisplayPort External
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -614,7 +614,7 @@ Display Path #17
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       EDID Manufacture ID: 0xc41
       EDID Product Code ID: 0xc155
       Connector Instance: 2
@@ -625,16 +625,16 @@ Display Path #17
 Display Path #18
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41221
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DisplayPort External
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -646,7 +646,7 @@ Display Path #18
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       EDID Manufacture ID: 0xc41
       EDID Product Code ID: 0xc155
       Connector Instance: 2
@@ -657,16 +657,16 @@ Display Path #18
 Display Path #19
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41221
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DisplayPort External
+    Output Technology: DisplayPortExternal
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -678,7 +678,7 @@ Display Path #19
       Flags: 0x5
         Friendly Name From EDID
         EDID IDs Valid
-      Output Technology: DisplayPort External
+      Output Technology: DisplayPortExternal
       EDID Manufacture ID: 0xc41
       EDID Product Code ID: 0xc155
       Connector Instance: 2
@@ -689,17 +689,17 @@ Display Path #19
 Display Path #20
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41222
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -709,7 +709,7 @@ Display Path #20
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 2
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -718,17 +718,17 @@ Display Path #20
 Display Path #21
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41222
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -738,7 +738,7 @@ Display Path #21
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 2
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -747,16 +747,16 @@ Display Path #21
 Display Path #22
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41222
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -766,7 +766,7 @@ Display Path #22
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 2
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -775,16 +775,16 @@ Display Path #22
 Display Path #23
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41222
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -794,7 +794,7 @@ Display Path #23
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 2
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -803,17 +803,17 @@ Display Path #23
 Display Path #24
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41984
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -823,7 +823,7 @@ Display Path #24
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 3
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -832,17 +832,17 @@ Display Path #24
 Display Path #25
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41984
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -852,7 +852,7 @@ Display Path #25
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 3
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -861,16 +861,16 @@ Display Path #25
 Display Path #26
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41984
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -880,7 +880,7 @@ Display Path #26
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 3
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -889,16 +889,16 @@ Display Path #26
 Display Path #27
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41984
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -908,7 +908,7 @@ Display Path #27
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 3
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -917,17 +917,17 @@ Display Path #27
 Display Path #28
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41985
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -937,7 +937,7 @@ Display Path #28
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 4
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -946,17 +946,17 @@ Display Path #28
 Display Path #29
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41985
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -966,7 +966,7 @@ Display Path #29
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 4
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -975,16 +975,16 @@ Display Path #29
 Display Path #30
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41985
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -994,7 +994,7 @@ Display Path #30
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 4
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1003,16 +1003,16 @@ Display Path #30
 Display Path #31
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41985
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1022,7 +1022,7 @@ Display Path #31
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 4
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1031,17 +1031,17 @@ Display Path #31
 Display Path #32
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41986
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1051,7 +1051,7 @@ Display Path #32
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 5
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1060,17 +1060,17 @@ Display Path #32
 Display Path #33
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41986
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1080,7 +1080,7 @@ Display Path #33
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 5
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1089,16 +1089,16 @@ Display Path #33
 Display Path #34
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41986
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1108,7 +1108,7 @@ Display Path #34
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 5
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1117,16 +1117,16 @@ Display Path #34
 Display Path #35
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41986
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1136,7 +1136,7 @@ Display Path #35
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 5
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1145,17 +1145,17 @@ Display Path #35
 Display Path #36
   Source:
     ID: 0
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY1"
   Target:
     ID: 41987
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 3
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 1
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1165,7 +1165,7 @@ Display Path #36
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 6
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1174,17 +1174,17 @@ Display Path #36
 Display Path #37
   Source:
     ID: 1
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
     Status Flags: 0x1
       DISPLAYCONFIG_SOURCE_IN_USE
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY2"
   Target:
     ID: 41987
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
-    Mode Info Index: 1
-    Output Technology: DVI
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Mode Info Index: 3
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1194,7 +1194,7 @@ Display Path #37
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 6
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1203,16 +1203,16 @@ Display Path #37
 Display Path #38
   Source:
     ID: 2
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY3"
   Target:
     ID: 41987
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1222,7 +1222,7 @@ Display Path #38
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 6
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
@@ -1231,16 +1231,16 @@ Display Path #38
 Display Path #39
   Source:
     ID: 3
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
     Status Flags: 0x0
     Source Device:
       GDI Device Name: "\\\\.\\DISPLAY4"
   Target:
     ID: 41987
-    Adapter ID: LUID { LowPart: 44734, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+    Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
     Mode Info Index: Invalid
-    Output Technology: DVI
+    Output Technology: Dvi
     Rotation: DISPLAYCONFIG_ROTATION(1)
     Scaling: DISPLAYCONFIG_SCALING(128)
     Refresh Rate: 0/0
@@ -1250,9 +1250,137 @@ Display Path #39
     Target Device:
       Flags: 0x2
         Friendly Name Forced
-      Output Technology: DVI
+      Output Technology: Dvi
       Connector Instance: 6
       Monitor Friendly Device Name: ""
       Monitor Device Path: ""
   Flags: 0x0
 
+DisplayConfig {
+    source_modes: [
+        DisplaySourceMode {
+            width: 1920,
+            height: 1080,
+            pixel_format: Bpp32,
+            position: Point {
+                x: 0,
+                y: 0,
+            },
+        },
+        DisplaySourceMode {
+            width: 1920,
+            height: 1080,
+            pixel_format: Bpp32,
+            position: Point {
+                x: -1920,
+                y: 0,
+            },
+        },
+    ],
+    target_modes: [
+        DisplayTargetMode {
+            device: DisplayTargetDevice {
+                id: 41221,
+                adapter: Adapter {
+                    device_instance_path: "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}",
+                },
+                output_technology: DisplayPortExternal,
+                edid_manufacture_id: Some(
+                    3137,
+                ),
+                edid_product_code_id: Some(
+                    49493,
+                ),
+                connector_instance: 2,
+                monitor_friendly_device_name: Some(
+                    "PHL 243V7",
+                ),
+                monitor_device_path: Some(
+                    "\\\\?\\DISPLAY#PHLC155#5&d10ba6e&0&UID41221#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+                ),
+            },
+            pixel_rate: 148500000,
+            h_sync_freq: Rational{148500000/2200},
+            v_sync_freq: Rational{60/1},
+            active_size: Region {
+                x: 1920,
+                y: 1080,
+            },
+            total_size: Region {
+                x: 2200,
+                y: 1125,
+            },
+            video_standard: Other(
+                255,
+            ),
+            v_sync_freq_divider: 0,
+            scanline_ordering: Progressive,
+        },
+        DisplayTargetMode {
+            device: DisplayTargetDevice {
+                id: 41217,
+                adapter: Adapter {
+                    device_instance_path: "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}",
+                },
+                output_technology: Dvi,
+                edid_manufacture_id: Some(
+                    58117,
+                ),
+                edid_product_code_id: Some(
+                    9328,
+                ),
+                connector_instance: 0,
+                monitor_friendly_device_name: Some(
+                    "2470W",
+                ),
+                monitor_device_path: Some(
+                    "\\\\?\\DISPLAY#AOC2470#5&d10ba6e&0&UID41217#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}",
+                ),
+            },
+            pixel_rate: 148500000,
+            h_sync_freq: Rational{148500000/2200},
+            v_sync_freq: Rational{60/1},
+            active_size: Region {
+                x: 1920,
+                y: 1080,
+            },
+            total_size: Region {
+                x: 2200,
+                y: 1125,
+            },
+            video_standard: Other(
+                255,
+            ),
+            v_sync_freq_divider: 0,
+            scanline_ordering: Progressive,
+        },
+    ],
+    paths: [
+        DisplayPath {
+            source: DisplayPathSource {
+                source_mode_index: 0,
+            },
+            target: DisplayPathTarget {
+                target_mode_index: 0,
+                output_technology: DisplayPortExternal,
+                rotation: Identity,
+                scaling: Identity,
+                refresh_rate: Rational{60/1},
+                scanline_ordering: Progressive,
+            },
+        },
+        DisplayPath {
+            source: DisplayPathSource {
+                source_mode_index: 1,
+            },
+            target: DisplayPathTarget {
+                target_mode_index: 1,
+                output_technology: Dvi,
+                rotation: Identity,
+                scaling: Identity,
+                refresh_rate: Rational{60/1},
+                scanline_ordering: Progressive,
+            },
+        },
+    ],
+}
