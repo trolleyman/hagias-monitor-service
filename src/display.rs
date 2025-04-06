@@ -396,6 +396,9 @@ impl DisplayConfig {
     }
 
     pub fn to_windows(&self) -> Result<WindowsDisplayConfig> {
+        // let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
+        // // TODO: Implement
+        // Ok(windows_display_config)
         todo!()
     }
 }

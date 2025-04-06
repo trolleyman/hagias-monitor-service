@@ -1,7 +1,10 @@
+use std::path::PathBuf;
+
 use anyhow::{Context, Result};
 
 use clap::Parser;
 use display::DisplayConfig;
+use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 pub mod display;
@@ -25,17 +28,13 @@ pub enum Command {
 pub enum ConfigCommand {
     // Store the current monitor configuration as the config named `name`
     Store { id: String, name: String },
+    // Load the config with ID `id`
+    Load { id: String },
 }
 
 #[rocket::main]
-pub async fn main() {
-    match run().await {
-        Ok(code) => std::process::exit(code),
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            std::process::exit(1);
-        }
-    }
+pub async fn main() -> Result<()> {
+    std::process::exit(run().await?)
 }
 
 pub async fn run() -> Result<i32> {
@@ -56,56 +55,73 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
         Command::Config(config_command) => match config_command {
             ConfigCommand::Store { id, name } => {
                 store_monitor_config(&id, &name).await?;
-                println!("Monitor config stored successfully");
+                println!("Monitor config {} \"{}\" stored successfully", id, name);
                 Ok(Some(0))
+            }
+            ConfigCommand::Load { id } => {
+                let stored_config = load_monitor_config(&id).await?;
+                if let Some(stored_config) = stored_config {
+                    println!(
+                        "Monitor config {} \"{}\" loaded successfully",
+                        stored_config.id, stored_config.name
+                    );
+                    stored_config.display_config.set()?;
+                    println!(
+                        "Monitor config {} \"{}\" set successfully",
+                        stored_config.id, stored_config.name
+                    );
+                    Ok(Some(0))
+                } else {
+                    println!("Monitor config {} not found", id);
+                    Ok(Some(1))
+                }
             }
         },
     }
 }
 
-pub async fn store_monitor_config(_id: &str, _name: &str) -> Result<()> {
-    println!("Getting current display configuration...");
+fn get_display_config_path(id: &str) -> PathBuf {
+    PathBuf::from("display_config").join(format!("{}.json", id))
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StoredConfig {
+    id: String,
+    name: String,
+    display_config: DisplayConfig,
+}
+
+pub async fn store_monitor_config(id: &str, name: &str) -> Result<()> {
     let windows_display_config =
         display::WindowsDisplayConfig::get(display::DisplayQueryType::All)?;
-    println!("Current display configuration:");
-    windows_display_config.print();
 
-    // windows_display_config.set()?;
-
-    println!("Converting to DisplayConfig...");
     let display_config = DisplayConfig::from_windows(&windows_display_config)?;
-
-    println!("Serializing to JSON...");
-    let json = serde_json::to_string_pretty(&display_config)?;
-
-    println!("Writing to display_config.json...");
-    let mut file = tokio::fs::File::create("display_config.json").await?;
-    file.write_all(json.as_bytes()).await?;
-
-    println!("Reading back display_config.json...");
-    let mut bytes = Vec::with_capacity(json.len());
-    println!("Reading to end...");
-    let mut file = tokio::fs::File::open("display_config.json").await?;
-    file.read_to_end(&mut bytes).await?;
-    println!("Converting to string...");
-    let json = String::from_utf8(bytes)?;
-
-    println!("Deserializing from JSON...");
-    // println!("JSON: {}", json);
-    let display_config: DisplayConfig = match serde_json::from_str(&json) {
-        Ok(display_config) => {
-            println!("DisplayConfig: {:#?}", display_config);
-            display_config
-        }
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            anyhow::bail!(e);
-        }
+    let stored_config = StoredConfig {
+        id: id.to_string(),
+        name: name.to_string(),
+        display_config,
     };
 
-    println!("Setting display configuration...");
-    display_config.set()?;
-    println!("Display configuration set successfully");
+    let json = serde_json::to_string_pretty(&stored_config)?;
 
+    let path = get_display_config_path(id);
+    if let Some(parent) = path.parent() {
+        tokio::fs::create_dir_all(parent).await?;
+    }
+    let mut file = tokio::fs::File::create(path).await?;
+    file.write_all(json.as_bytes()).await?;
     Ok(())
+}
+
+pub async fn load_monitor_config(id: &str) -> Result<Option<StoredConfig>> {
+    let path = get_display_config_path(id);
+    if !tokio::fs::try_exists(&path).await? {
+        return Ok(None);
+    }
+
+    let mut file = tokio::fs::File::open(path).await?;
+    let mut bytes = Vec::with_capacity(file.metadata().await?.len() as usize);
+    file.read_to_end(&mut bytes).await?;
+    let json = String::from_utf8(bytes)?;
+    Ok(Some(serde_json::from_str(&json)?))
 }
