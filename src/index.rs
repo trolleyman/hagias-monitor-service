@@ -33,31 +33,28 @@ pub async fn index() -> RawHtml<String> {
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
+                position: relative;
+                cursor: pointer;
+                border: none;
+                transition: all 0.3s;
+            }
+            .config-item:hover {
+                background: #e0e0e0;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             }
             .config-name {
                 font-size: 1.2em;
                 font-weight: bold;
                 color: #333;
+                margin-top: 20px;
             }
             .config-id {
                 color: #666;
                 font-size: 0.9em;
-            }
-            .apply-button {
-                background: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 1em;
-                transition: background 0.3s;
-            }
-            .apply-button:hover {
-                background: #45a049;
-            }
-            .apply-button:active {
-                background: #3d8b40;
+                position: absolute;
+                top: 10px;
+                right: 10px;
             }
         </style>
     </head>
@@ -68,12 +65,11 @@ pub async fn index() -> RawHtml<String> {
 
     for config in configs {
         html.push_str(&format!(
-            r#"<div class="config-item">
+            r#"<button class="config-item" onclick="applyConfig('{}')">
+                <span class="config-id">{}</span>
                 <span class="config-name">{}</span>
-                <span class="config-id">ID: {}</span>
-                <button class="apply-button" onclick="applyConfig('{}')">Apply Configuration</button>
-            </div>"#,
-            config.name, config.id, config.id
+            </button>"#,
+            config.id, config.id, config.name
         ));
     }
 
