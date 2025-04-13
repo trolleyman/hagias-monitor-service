@@ -4,12 +4,13 @@ use anyhow::{Context, Result};
 
 use clap::Parser;
 use display::DisplayConfig;
+use lexical_sort::PathSort;
 use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 pub mod display;
-pub(crate) mod serde_override;
 pub mod index;
+pub(crate) mod serde_override;
 
 #[derive(Debug, Clone, clap::Parser)]
 #[command(author, version, about)]
@@ -108,7 +109,12 @@ async fn get_all_display_config_paths() -> Result<Vec<PathBuf>> {
 async fn get_all_display_configs() -> Result<Vec<StoredConfig>> {
     let paths = get_all_display_config_paths().await?;
     let mut configs = Vec::with_capacity(paths.len());
-    for path in paths {
+
+    // Sort paths naturally by filename
+    let mut sorted_paths: Vec<_> = paths.into_iter().collect();
+    sorted_paths.path_sort(lexical_sort::natural_lexical_cmp);
+
+    for path in sorted_paths {
         let mut file = tokio::fs::File::open(path).await?;
         let mut contents = String::new();
         file.read_to_string(&mut contents).await?;
