@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{ffi::OsStr, path::PathBuf};
 
 use anyhow::{Context, Result};
 
@@ -9,6 +9,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 pub mod display;
 pub(crate) mod serde_override;
+pub mod index;
 
 #[derive(Debug, Clone, clap::Parser)]
 #[command(author, version, about)]
@@ -46,7 +47,11 @@ pub async fn run() -> Result<i32> {
         }
     }
 
-    rocket::build().launch().await.context("Rocket error")?;
+    rocket::build()
+        .mount("/", rocket::routes![index::index, index::apply_config])
+        .launch()
+        .await
+        .context("Rocket error")?;
     Ok(0)
 }
 
@@ -80,8 +85,37 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
     }
 }
 
+fn get_display_config_directory() -> PathBuf {
+    PathBuf::from("display_config")
+}
+
 fn get_display_config_path(id: &str) -> PathBuf {
-    PathBuf::from("display_config").join(format!("{}.json", id))
+    get_display_config_directory().join(format!("{}.json", id))
+}
+
+async fn get_all_display_config_paths() -> Result<Vec<PathBuf>> {
+    let mut paths = Vec::new();
+    let mut entries = tokio::fs::read_dir(get_display_config_directory()).await?;
+    while let Some(entry) = entries.next_entry().await? {
+        let path = entry.path();
+        if path.is_file() && path.extension() == Some(OsStr::new("json")) {
+            paths.push(path);
+        }
+    }
+    Ok(paths)
+}
+
+async fn get_all_display_configs() -> Result<Vec<StoredConfig>> {
+    let paths = get_all_display_config_paths().await?;
+    let mut configs = Vec::with_capacity(paths.len());
+    for path in paths {
+        let mut file = tokio::fs::File::open(path).await?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).await?;
+        let config: StoredConfig = serde_json::from_str(&contents)?;
+        configs.push(config);
+    }
+    Ok(configs)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
