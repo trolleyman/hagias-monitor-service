@@ -96,8 +96,8 @@ impl DisplayConfigBuilder {
         Ok(self.paths.len() - 1)
     }
 
-    pub fn build(&self) -> DisplayConfig {
-        DisplayConfig {
+    pub fn build(&self) -> DisplayLayout {
+        DisplayLayout {
             source_modes: self.source_modes.clone(),
             target_modes: self.target_modes.clone(),
             paths: self.paths.clone(),
@@ -316,24 +316,24 @@ impl DisplayConfigBuilder {
 
 /// All active display modes and paths, that can be serialized and restored later.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DisplayConfig {
+pub struct DisplayLayout {
     pub source_modes: Vec<DisplaySourceMode>,
     pub target_modes: Vec<DisplayTargetMode>,
     pub paths: Vec<DisplayPath>,
 }
 
-impl DisplayConfig {
+impl DisplayLayout {
     pub fn get() -> Result<Self> {
         let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::Active)?;
         Self::from_windows(&windows_display_config)
     }
 
-    pub fn set(&self) -> Result<()> {
+    pub fn apply(&self) -> Result<()> {
         let windows_display_config = self.to_windows()?;
         // println!("=== New display config ===");
         // windows_display_config.print();
         // println!("=== End of new display config ===");
-        windows_display_config.set()
+        windows_display_config.apply()
     }
 
     pub fn from_windows(windows_display_config: &WindowsDisplayConfig) -> Result<Self> {

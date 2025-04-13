@@ -1,15 +1,17 @@
+use anyhow::Result;
 use rocket::get;
+use rocket::http::Status;
 use rocket::post;
 use rocket::response::content::RawHtml;
 use rocket::response::status;
-use crate::config::get_all_display_configs;
-use crate::config::load_monitor_config;
+
+use crate::config::Layouts;
 
 #[get("/")]
-pub async fn index() -> RawHtml<String> {
-    let configs = get_all_display_configs().await.unwrap_or_default();
-
-    let mut html = String::from(r#"
+pub async fn index() -> Result<RawHtml<String>, rocket::response::Debug<anyhow::Error>> {
+    let layouts = Layouts::load().await?;
+    let mut html = String::from(
+        r#"
     <!DOCTYPE html>
     <html>
     <head>
@@ -62,19 +64,22 @@ pub async fn index() -> RawHtml<String> {
     <body>
         <h1>Monitor Configurations</h1>
         <div class="config-grid">
-    "#);
+    "#,
+    );
 
-    for config in configs {
+    for layout in layouts {
         html.push_str(&format!(
-            r#"<button class="config-item" onclick="applyConfig('{}')">
-                <span class="config-id">{}</span>
-                <span class="config-name">{}</span>
+            r#"<button class="config-item" onclick="applyConfig('{0}')">
+                <span class="config-id">{0}</span>
+                <span class="config-name">{1}</span>
             </button>"#,
-            config.id, config.id, config.name
+            html_escape::encode_safe(&layout.id),
+            html_escape::encode_safe(&layout.name)
         ));
     }
 
-    html.push_str(r#"
+    html.push_str(
+        r#"
         </div>
         <script>
             async function applyConfig(id) {
@@ -94,17 +99,37 @@ pub async fn index() -> RawHtml<String> {
         </script>
     </body>
     </html>
-    "#);
+    "#,
+    );
 
-    RawHtml(html)
+    Ok(RawHtml(html))
 }
 
 #[post("/api/apply/<id>")]
-pub async fn apply_config(id: String) -> status::Accepted<String> {
-    if let Ok(Some(config)) = load_monitor_config(&id).await {
-        if let Ok(_) = config.display_config.set() {
-            return status::Accepted(format!("Configuration '{}' applied successfully", config.name));
-        }
+pub async fn apply_config(id: String) -> status::Custom<String> {
+    match Layouts::load().await {
+        Ok(layouts) => match layouts.get_layout(&id) {
+            Some(layout) => match layout.layout.apply() {
+                Ok(_) => status::Custom(
+                    Status::Accepted,
+                    format!(
+                        "Configuration {} \"{}\" applied successfully",
+                        layout.id, layout.name
+                    ),
+                ),
+                Err(e) => status::Custom(
+                    Status::InternalServerError,
+                    format!(
+                        "Failed to apply layout {} \"{}\": {:?}",
+                        layout.id, layout.name, e
+                    ),
+                ),
+            },
+            None => status::Custom(Status::NotFound, format!("Layout {} not found", id)),
+        },
+        Err(e) => status::Custom(
+            Status::InternalServerError,
+            format!("Failed to load layouts: {:?}", e),
+        ),
     }
-    status::Accepted("Failed to apply configuration".to_string())
 }

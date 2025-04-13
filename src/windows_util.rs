@@ -304,7 +304,7 @@ impl WindowsDisplayConfig {
         })
     }
 
-    pub fn set(&self) -> Result<()> {
+    pub fn apply(&self) -> Result<()> {
         unsafe {
             let result = SetDisplayConfig(
                 Some(&self.paths),

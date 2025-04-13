@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::config;
+use crate::config::Layouts;
 
 #[derive(Debug, Clone, clap::Subcommand)]
 pub enum Command {
@@ -23,36 +23,41 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
     match command {
         Command::Config(config_command) => match config_command {
             ConfigCommand::Store { id, name } => {
-                config::store_monitor_config(&id, &name).await?;
-                println!("Monitor config {} \"{}\" stored successfully", id, name);
+                // TODO: Lock layouts
+                println!("Loading layouts...");
+                let mut layouts = Layouts::load().await?;
+                layouts.add_current(&id, &name).await?;
+                layouts.save().await?;
+                println!("Monitor layout {} \"{}\" stored successfully", id, name);
                 Ok(Some(0))
             }
             ConfigCommand::Apply { id } => {
-                let stored_config = config::load_monitor_config(&id).await?;
-                if let Some(stored_config) = stored_config {
+                let layouts = Layouts::load().await?;
+                let layout = layouts.get_layout(&id);
+                if let Some(layout) = layout {
                     println!(
-                        "Monitor config {} \"{}\" loaded successfully",
-                        stored_config.id, stored_config.name
+                        "Monitor layout {} \"{}\" loaded successfully",
+                        layout.id, layout.name
                     );
-                    stored_config.display_config.set()?;
+                    layout.layout.apply()?;
                     println!(
-                        "Monitor config {} \"{}\" applied successfully",
-                        stored_config.id, stored_config.name
+                        "Monitor layout {} \"{}\" applied successfully",
+                        layout.id, layout.name
                     );
                     Ok(Some(0))
                 } else {
-                    println!("Monitor config {} not found", id);
+                    println!("Monitor layout {} not found", id);
                     Ok(Some(1))
                 }
             }
             ConfigCommand::List => {
-                let configs = config::get_all_display_configs().await?;
-                if configs.is_empty() {
+                let layouts = Layouts::load().await?;
+                if layouts.is_empty() {
                     println!("No monitor configurations found");
                 } else {
                     println!("Available monitor configurations:");
-                    for config in configs {
-                        println!("  {} - {:?}", config.id, config.name);
+                    for layout in layouts {
+                        println!("  {} - {:?}", layout.id, layout.name);
                     }
                 }
                 Ok(Some(0))
