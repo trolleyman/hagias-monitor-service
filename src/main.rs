@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 
 pub mod command;
-pub mod config;
+pub mod layouts;
 pub mod display;
 pub mod index;
 pub(crate) mod serde_override;

@@ -5,7 +5,7 @@ use rocket::post;
 use rocket::response::content::RawHtml;
 use rocket::response::status;
 
-use crate::config::Layouts;
+use crate::layouts::Layouts;
 
 #[get("/")]
 pub async fn index() -> Result<RawHtml<String>, rocket::response::Debug<anyhow::Error>> {

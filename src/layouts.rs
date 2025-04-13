@@ -98,6 +98,14 @@ impl Layouts {
     }
 }
 
+impl std::ops::Index<usize> for Layouts {
+    type Output = NamedLayout;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NamedLayout {
     pub id: String,
