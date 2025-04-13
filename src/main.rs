@@ -1,10 +1,12 @@
+use std::net::Ipv4Addr;
+
 use anyhow::{Context, Result};
 use clap::Parser;
 
 pub mod command;
-pub mod layouts;
 pub mod display;
 pub mod index;
+pub mod layouts;
 pub(crate) mod serde_override;
 pub mod windows_util;
 
@@ -29,7 +31,14 @@ pub async fn run() -> Result<i32> {
         }
     }
 
+    let config = rocket::Config {
+        port: 5781,
+        address: Ipv4Addr::new(0, 0, 0, 0).into(),
+        ..rocket::Config::debug_default()
+    };
+
     rocket::build()
+        .configure(config)
         .mount("/", rocket::routes![index::index, index::apply_config])
         .launch()
         .await
