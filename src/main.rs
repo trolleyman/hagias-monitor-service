@@ -32,6 +32,8 @@ pub enum ConfigCommand {
     Store { id: String, name: String },
     // Apply the config with ID `id`
     Apply { id: String },
+    // List all available configurations
+    List,
 }
 
 #[rocket::main]
@@ -81,6 +83,18 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
                     println!("Monitor config {} not found", id);
                     Ok(Some(1))
                 }
+            }
+            ConfigCommand::List => {
+                let configs = get_all_display_configs().await?;
+                if configs.is_empty() {
+                    println!("No monitor configurations found");
+                } else {
+                    println!("Available monitor configurations:");
+                    for config in configs {
+                        println!("  {} - {:?}", config.id, config.name);
+                    }
+                }
+                Ok(Some(0))
             }
         },
     }
