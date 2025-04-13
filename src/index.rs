@@ -2,7 +2,8 @@ use rocket::get;
 use rocket::post;
 use rocket::response::content::RawHtml;
 use rocket::response::status;
-use crate::{get_all_display_configs, load_monitor_config};
+use crate::config::get_all_display_configs;
+use crate::config::load_monitor_config;
 
 #[get("/")]
 pub async fn index() -> RawHtml<String> {
@@ -99,7 +100,7 @@ pub async fn index() -> RawHtml<String> {
 }
 
 #[post("/api/apply/<id>")]
-pub async fn apply_config(id: &str) -> status::Accepted<String> {
+pub async fn apply_config(id: String) -> status::Accepted<String> {
     if let Ok(Some(config)) = load_monitor_config(&id).await {
         if let Ok(_) = config.display_config.set() {
             return status::Accepted(format!("Configuration '{}' applied successfully", config.name));
