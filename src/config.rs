@@ -31,6 +31,14 @@ impl Layouts {
         self.0.is_empty()
     }
 
+    pub fn iter(&self) -> std::slice::Iter<'_, NamedLayout> {
+        self.0.iter()
+    }
+
+    pub fn swap(&mut self, a: usize, b: usize) {
+        self.0.swap(a, b);
+    }
+
     pub async fn load() -> Result<Self> {
         Self::load_private()
             .await
@@ -76,6 +84,7 @@ impl Layouts {
     }
 
     pub fn add_layout(&mut self, layout: NamedLayout) {
+        self.0.retain(|l| l.id != layout.id);
         self.0.push(layout);
     }
 

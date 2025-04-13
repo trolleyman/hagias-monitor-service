@@ -7,6 +7,7 @@ edition = "2024"
 anyhow = { version = "1.0.97", features = ["backtrace"] }
 bitflags = "2.9.0"
 clap = { version = "4.5.34", features = ['derive'] }
+crossterm = "0.27.0"
 derive_more = { version = "2.0.1", features = ["std", "into_iterator"] }
 html-escape = "0.2.13"
 rocket = "0.5.1"
