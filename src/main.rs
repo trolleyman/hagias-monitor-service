@@ -118,13 +118,23 @@ pub async fn store_monitor_config(id: &str, name: &str) -> Result<()> {
 
 pub async fn load_monitor_config(id: &str) -> Result<Option<StoredConfig>> {
     let path = get_display_config_path(id);
-    if !tokio::fs::try_exists(&path).await? {
+    let path_ref = &path;
+    if !tokio::fs::try_exists(path_ref).await? {
         return Ok(None);
     }
 
-    let mut file = tokio::fs::File::open(path).await?;
+    let mut file = tokio::fs::File::open(path_ref).await?;
     let mut bytes = Vec::with_capacity(file.metadata().await?.len() as usize);
-    file.read_to_end(&mut bytes).await?;
-    let json = String::from_utf8(bytes)?;
-    Ok(Some(serde_json::from_str(&json)?))
+    file.read_to_end(&mut bytes)
+        .await
+        .with_context(|| format!("Failed to read monitor config at {}", path_ref.display()))?;
+    let json = String::from_utf8(bytes).with_context(|| {
+        format!(
+            "Failed to parse monitor config as UTF-8 at {}",
+            path_ref.display()
+        )
+    })?;
+    Ok(Some(serde_json::from_str(&json).with_context(|| {
+        format!("Failed to parse monitor config at {}", path_ref.display())
+    })?))
 }

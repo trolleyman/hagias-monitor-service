@@ -6,7 +6,7 @@ use std::{
     os::windows::ffi::OsStringExt,
 };
 
-use anyhow::{Result, bail};
+use anyhow::{Result, anyhow, bail};
 use serde::{Deserialize, Serialize};
 use unit_enum::UnitEnum;
 use windows::{
@@ -26,9 +26,9 @@ use windows::{
             DISPLAYCONFIG_2DREGION, DISPLAYCONFIG_ADAPTER_NAME,
             DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME, DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME,
             DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME, DISPLAYCONFIG_DEVICE_INFO_HEADER,
-            DISPLAYCONFIG_MODE_INFO, DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE,
-            DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE, DISPLAYCONFIG_MODE_INFO_TYPE_TARGET,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO,
+            DISPLAYCONFIG_MODE_INFO, DISPLAYCONFIG_MODE_INFO_0,
+            DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE, DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE,
+            DISPLAYCONFIG_MODE_INFO_TYPE_TARGET, DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO, DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL,
@@ -41,6 +41,8 @@ use windows::{
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE, DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SVIDEO,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EXTERNAL, DISPLAYCONFIG_PATH_INFO,
+            DISPLAYCONFIG_PATH_SOURCE_INFO, DISPLAYCONFIG_PATH_SOURCE_INFO_0,
+            DISPLAYCONFIG_PATH_TARGET_INFO, DISPLAYCONFIG_PATH_TARGET_INFO_0,
             DISPLAYCONFIG_PIXELFORMAT, DISPLAYCONFIG_PIXELFORMAT_8BPP,
             DISPLAYCONFIG_PIXELFORMAT_16BPP, DISPLAYCONFIG_PIXELFORMAT_24BPP,
             DISPLAYCONFIG_PIXELFORMAT_32BPP, DISPLAYCONFIG_PIXELFORMAT_NONGDI,
@@ -55,8 +57,10 @@ use windows::{
             DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST,
             DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE,
             DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED, DISPLAYCONFIG_SOURCE_DEVICE_NAME,
-            DISPLAYCONFIG_TARGET_DEVICE_NAME, DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS,
+            DISPLAYCONFIG_SOURCE_MODE, DISPLAYCONFIG_TARGET_DEVICE_NAME,
+            DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS, DISPLAYCONFIG_TARGET_MODE,
             DISPLAYCONFIG_TOPOLOGY_ID, DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY,
+            DISPLAYCONFIG_VIDEO_SIGNAL_INFO, DISPLAYCONFIG_VIDEO_SIGNAL_INFO_0,
             DisplayConfigGetDeviceInfo, GetDisplayConfigBufferSizes, QDC_ALL_PATHS,
             QDC_DATABASE_CURRENT, QDC_ONLY_ACTIVE_PATHS, QUERY_DISPLAY_CONFIG_FLAGS,
             QueryDisplayConfig, SDC_APPLY, SDC_USE_SUPPLIED_DISPLAY_CONFIG, SetDisplayConfig,
@@ -116,6 +120,8 @@ struct DisplayConfigBuilder {
     windows_display_source_mode_to_index: HashMap<u32, usize>,
     windows_display_target_mode_to_index: HashMap<u32, usize>,
     target_devices: HashMap<IdAndAdapterId, DisplayTargetDevice>,
+    source_devices: HashMap<IdAndAdapterId, DisplaySourceDevice>,
+    adapters: HashMap<LuidWrapper, Adapter>,
 }
 impl DisplayConfigBuilder {
     pub fn new() -> Self {
@@ -126,6 +132,8 @@ impl DisplayConfigBuilder {
             windows_display_source_mode_to_index: HashMap::new(),
             windows_display_target_mode_to_index: HashMap::new(),
             target_devices: HashMap::new(),
+            source_devices: HashMap::new(),
+            adapters: HashMap::new(),
         }
     }
 
@@ -181,43 +189,56 @@ impl DisplayConfigBuilder {
         }
     }
 
+    fn get_adapter(&mut self, adapter_id: LuidWrapper) -> Result<&Adapter> {
+        match self.adapters.entry(adapter_id) {
+            hash_map::Entry::Vacant(entry) => {
+                Ok(entry.insert(Adapter::from_adapter_id(adapter_id)?))
+            }
+            hash_map::Entry::Occupied(entry) => Ok(entry.into_mut()),
+        }
+    }
+
     fn get_source_mode_index(
         &mut self,
         windows_source_mode_index: u32,
         windows_display_config: &WindowsDisplayConfig,
     ) -> Result<usize> {
-        match self
+        if self
             .windows_display_source_mode_to_index
-            .entry(windows_source_mode_index)
+            .contains_key(&windows_source_mode_index)
         {
-            hash_map::Entry::Vacant(entry) => {
-                let windows_mode_info = windows_display_config
-                    .modes
-                    .get(windows_source_mode_index as usize)
-                    .ok_or_else(|| {
-                        anyhow::anyhow!("Source mode #{} not found", windows_source_mode_index)
-                    })?;
-                if windows_mode_info.infoType != DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE {
-                    bail!(
-                        "Mode #{} is not a source mode: {:?}",
-                        windows_source_mode_index,
-                        windows_mode_info.infoType
-                    );
-                }
-                let windows_source_mode = unsafe { windows_mode_info.Anonymous.sourceMode };
-                let source_mode = DisplaySourceMode {
-                    width: windows_source_mode.width,
-                    height: windows_source_mode.height,
-                    pixel_format: windows_source_mode.pixelFormat.into(),
-                    position: windows_source_mode.position.into(),
-                };
-                self.source_modes.push(source_mode);
-                let index = self.source_modes.len() - 1;
-                entry.insert(index);
-                Ok(index)
-            }
-            hash_map::Entry::Occupied(entry) => Ok(*entry.get()),
+            return Ok(self.windows_display_source_mode_to_index[&windows_source_mode_index]);
         }
+
+        let windows_mode_info = windows_display_config
+            .modes
+            .get(windows_source_mode_index as usize)
+            .ok_or_else(|| anyhow!("Source mode #{} not found", windows_source_mode_index))?;
+        if windows_mode_info.infoType != DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE {
+            bail!(
+                "Mode #{} is not a source mode: {:?}",
+                windows_source_mode_index,
+                windows_mode_info.infoType
+            );
+        }
+        let windows_source_mode = unsafe { windows_mode_info.Anonymous.sourceMode };
+
+        let device = self
+            .get_source_device(windows_mode_info.id, windows_mode_info.adapterId.into())?
+            .clone();
+
+        let source_mode = DisplaySourceMode {
+            device,
+            width: windows_source_mode.width,
+            height: windows_source_mode.height,
+            pixel_format: windows_source_mode.pixelFormat.into(),
+            position: windows_source_mode.position.into(),
+        };
+        self.source_modes.push(source_mode);
+        let index = self.source_modes.len() - 1;
+        self.windows_display_source_mode_to_index
+            .insert(windows_source_mode_index, index);
+        Ok(index)
     }
 
     fn get_target_mode_index(
@@ -225,12 +246,16 @@ impl DisplayConfigBuilder {
         windows_target_mode_index: u32,
         windows_display_config: &WindowsDisplayConfig,
     ) -> Result<usize> {
+        if self
+            .windows_display_target_mode_to_index
+            .contains_key(&windows_target_mode_index)
+        {
+            return Ok(self.windows_display_target_mode_to_index[&windows_target_mode_index]);
+        }
         let windows_mode_info = windows_display_config
             .modes
             .get(windows_target_mode_index as usize)
-            .ok_or_else(|| {
-                anyhow::anyhow!("Target mode #{} not found", windows_target_mode_index)
-            })?;
+            .ok_or_else(|| anyhow!("Target mode #{} not found", windows_target_mode_index))?;
         if windows_mode_info.infoType != DISPLAYCONFIG_MODE_INFO_TYPE_TARGET {
             bail!(
                 "Mode #{} is not a target mode: {:?}",
@@ -238,57 +263,52 @@ impl DisplayConfigBuilder {
                 windows_mode_info.infoType
             );
         }
+
         let device = self
-            .get_target_device(windows_mode_info.id, windows_mode_info.adapterId)?
+            .get_target_device(windows_mode_info.id, windows_mode_info.adapterId.into())?
             .clone();
-        match self
-            .windows_display_target_mode_to_index
-            .entry(windows_target_mode_index)
-        {
-            hash_map::Entry::Vacant(entry) => {
-                let windows_target_mode = unsafe { windows_mode_info.Anonymous.targetMode };
-                let (video_standard, v_sync_freq_divider) = if
-                /* WINDOWS_VERSION >= 8.1 */
-                true {
-                    unsafe {
-                        (
-                            (windows_target_mode
-                                .targetVideoSignalInfo
-                                .Anonymous
-                                .AdditionalSignalInfo
-                                ._bitfield
-                                & 0xFFFF) as i32,
-                            ((windows_target_mode
-                                .targetVideoSignalInfo
-                                .Anonymous
-                                .AdditionalSignalInfo
-                                ._bitfield
-                                >> 16)
-                                & 0b111111) as u32,
-                        )
-                    }
-                } else {
-                    (0, 0)
-                };
-                let signal_info = windows_target_mode.targetVideoSignalInfo;
-                let target_mode = DisplayTargetMode {
-                    device: device.clone(),
-                    pixel_rate: signal_info.pixelRate.into(),
-                    h_sync_freq: signal_info.hSyncFreq.into(),
-                    v_sync_freq: signal_info.vSyncFreq.into(),
-                    active_size: signal_info.activeSize.into(),
-                    total_size: signal_info.totalSize.into(),
-                    video_standard: video_standard.into(),
-                    v_sync_freq_divider,
-                    scanline_ordering: signal_info.scanLineOrdering.into(),
-                };
-                self.target_modes.push(target_mode);
-                let index = self.target_modes.len() - 1;
-                entry.insert(index);
-                Ok(index)
+
+        let windows_target_mode = unsafe { windows_mode_info.Anonymous.targetMode };
+        let (video_standard, v_sync_freq_divider) = if
+        /* WINDOWS_VERSION >= 8.1 */
+        true {
+            unsafe {
+                (
+                    (windows_target_mode
+                        .targetVideoSignalInfo
+                        .Anonymous
+                        .AdditionalSignalInfo
+                        ._bitfield
+                        & 0xFFFF) as i32,
+                    ((windows_target_mode
+                        .targetVideoSignalInfo
+                        .Anonymous
+                        .AdditionalSignalInfo
+                        ._bitfield
+                        >> 16)
+                        & 0b111111) as u32,
+                )
             }
-            hash_map::Entry::Occupied(entry) => Ok(*entry.get()),
-        }
+        } else {
+            (0, 0)
+        };
+        let signal_info = windows_target_mode.targetVideoSignalInfo;
+        let target_mode = DisplayTargetMode {
+            device: device.clone(),
+            pixel_rate: signal_info.pixelRate.into(),
+            h_sync_freq: signal_info.hSyncFreq.into(),
+            v_sync_freq: signal_info.vSyncFreq.into(),
+            active_size: signal_info.activeSize.into(),
+            total_size: signal_info.totalSize.into(),
+            video_standard: video_standard.into(),
+            v_sync_freq_divider,
+            scanline_ordering: signal_info.scanLineOrdering.into(),
+        };
+        self.target_modes.push(target_mode);
+        let index = self.target_modes.len() - 1;
+        self.windows_display_target_mode_to_index
+            .insert(windows_target_mode_index, index);
+        Ok(index)
     }
 
     fn get_source_index_from_path(
@@ -319,55 +339,90 @@ impl DisplayConfigBuilder {
         self.get_target_mode_index(windows_target_mode_index, windows_display_config)
     }
 
-    fn get_target_device<'a>(
-        &'a mut self,
+    fn get_source_device(
+        &mut self,
         id: u32,
-        adapter_id: windows::Win32::Foundation::LUID,
-    ) -> Result<&'a DisplayTargetDevice> {
-        let id_and_adapter_id = IdAndAdapterId {
-            id,
-            adapter_id: adapter_id.into(),
-        };
-        match self.target_devices.entry(id_and_adapter_id) {
-            hash_map::Entry::Vacant(entry) => {
-                let target_device_name = get_target_device_name(id, adapter_id)?;
-                let (edid_manufacture_id, edid_product_code_id) =
-                    if is_target_device_edid_ids_valid(target_device_name.flags) {
-                        (
-                            Some(target_device_name.edidManufactureId),
-                            Some(target_device_name.edidProductCodeId),
-                        )
-                    } else {
-                        (None, None)
-                    };
-                let monitor_friendly_device_name = wchar_null_terminated_to_os_string(
-                    &target_device_name.monitorFriendlyDeviceName,
-                );
-                let monitor_device_path =
-                    wchar_null_terminated_to_os_string(&target_device_name.monitorDevicePath);
-                let target_device = DisplayTargetDevice {
-                    id,
-                    adapter: Adapter::from_adapter_id(adapter_id)?,
-                    output_technology: target_device_name.outputTechnology.into(),
-                    edid_manufacture_id,
-                    edid_product_code_id,
-                    connector_instance: target_device_name.connectorInstance,
-                    monitor_friendly_device_name: if monitor_friendly_device_name.len() > 0 {
-                        Some(monitor_friendly_device_name)
-                    } else {
-                        None
-                    },
-                    monitor_device_path: if monitor_device_path.len() > 0 {
-                        Some(monitor_device_path)
-                    } else {
-                        None
-                    },
-                };
-                Ok(entry.insert(target_device))
-            }
-            hash_map::Entry::Occupied(entry) => Ok(entry.into_mut()),
+        adapter_id: LuidWrapper,
+    ) -> Result<&DisplaySourceDevice> {
+        let id_and_adapter_id = IdAndAdapterId { id, adapter_id };
+        if !self.source_devices.contains_key(&id_and_adapter_id) {
+            let adapter = self.get_adapter(adapter_id)?.clone();
+
+            let source_device_name = get_source_device_name(id, adapter_id)?;
+            let source_device = DisplaySourceDevice {
+                id,
+                adapter,
+                gdi_device_name: wchar_null_terminated_to_os_string(
+                    &source_device_name.viewGdiDeviceName,
+                ),
+            };
+            self.source_devices.insert(id_and_adapter_id, source_device);
         }
+        Ok(&self.source_devices[&id_and_adapter_id])
     }
+
+    fn get_target_device(
+        &mut self,
+        id: u32,
+        adapter_id: LuidWrapper,
+    ) -> Result<&DisplayTargetDevice> {
+        let id_and_adapter_id = IdAndAdapterId { id, adapter_id };
+        if !self.target_devices.contains_key(&id_and_adapter_id) {
+            let adapter = self.get_adapter(adapter_id)?.clone();
+
+            let target_device_name = get_target_device_name(id, adapter_id.into())?;
+            let (edid_manufacture_id, edid_product_code_id) =
+                if is_target_device_edid_ids_valid(target_device_name.flags) {
+                    (
+                        Some(target_device_name.edidManufactureId),
+                        Some(target_device_name.edidProductCodeId),
+                    )
+                } else {
+                    (None, None)
+                };
+            let monitor_friendly_device_name =
+                get_monitor_friendly_device_name(&target_device_name);
+            let monitor_device_path = get_monitor_device_path(&target_device_name);
+            let target_device = DisplayTargetDevice {
+                id,
+                adapter,
+                output_technology: target_device_name.outputTechnology.into(),
+                edid_manufacture_id,
+                edid_product_code_id,
+                connector_instance: target_device_name.connectorInstance,
+                monitor_friendly_device_name,
+                monitor_device_path,
+            };
+            self.target_devices.insert(id_and_adapter_id, target_device);
+        }
+        Ok(&self.target_devices[&id_and_adapter_id])
+    }
+}
+
+fn get_monitor_friendly_device_name(
+    target_device_name: &DISPLAYCONFIG_TARGET_DEVICE_NAME,
+) -> Option<OsString> {
+    let monitor_friendly_device_name =
+        wchar_null_terminated_to_os_string(&target_device_name.monitorFriendlyDeviceName);
+    let monitor_friendly_device_name = if monitor_friendly_device_name.len() > 0 {
+        Some(monitor_friendly_device_name)
+    } else {
+        None
+    };
+    monitor_friendly_device_name
+}
+
+fn get_monitor_device_path(
+    target_device_name: &DISPLAYCONFIG_TARGET_DEVICE_NAME,
+) -> Option<OsString> {
+    let monitor_device_path =
+        wchar_null_terminated_to_os_string(&target_device_name.monitorDevicePath);
+    let monitor_device_path = if monitor_device_path.len() > 0 {
+        Some(monitor_device_path)
+    } else {
+        None
+    };
+    monitor_device_path
 }
 
 /// All active display modes and paths, that can be serialized and restored later.
@@ -386,6 +441,9 @@ impl DisplayConfig {
 
     pub fn set(&self) -> Result<()> {
         let windows_display_config = self.to_windows()?;
+        // println!("=== New display config ===");
+        // windows_display_config.print();
+        // println!("=== End of new display config ===");
         windows_display_config.set()
     }
 
@@ -396,51 +454,134 @@ impl DisplayConfig {
     }
 
     pub fn to_windows(&self) -> Result<WindowsDisplayConfig> {
-        let mut windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
-        let mut applier = DisplayConfigApplier::new(&mut windows_display_config, self);
-        applier.apply()?;
-        Ok(windows_display_config)
-    }
-}
+        let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
+        // println!("=== Existing display config ===");
+        // windows_display_config.print();
+        // println!("=== End of existing display config ===");
 
-struct DisplayConfigApplier<'a> {
-    windows_display_config: &'a mut WindowsDisplayConfig,
-    display_config: &'a DisplayConfig,
-}
+        let mut new_windows_modes = Vec::new();
+        let mut new_windows_paths = Vec::new();
 
-impl<'a> DisplayConfigApplier<'a> {
-    pub fn new(
-        windows_display_config: &'a mut WindowsDisplayConfig,
-        display_config: &'a DisplayConfig,
-    ) -> Self {
-        Self {
-            windows_display_config,
-            display_config,
+        // Get device path => adapter IDs
+        let device_path_to_adapter_id = windows_display_config
+            .adapter_device_names
+            .iter()
+            .map(|(adapter_id, device_path)| (device_path.clone(), adapter_id.clone()))
+            .collect::<HashMap<OsString, LuidWrapper>>();
+
+        // Populate source modes
+        for source_mode in self.source_modes.iter() {
+            let adapter_id = *device_path_to_adapter_id
+                .get(&source_mode.device.adapter.device_instance_path)
+                .ok_or_else(|| {
+                    anyhow!(
+                        "Adapter ID not found for device path: {:?}",
+                        source_mode.device.adapter.device_instance_path
+                    )
+                })?;
+
+            // TODO: Map GDI device name instead of direct ID
+
+            let windows_source_mode = DISPLAYCONFIG_MODE_INFO {
+                id: source_mode.device.id,
+                adapterId: adapter_id.0,
+                infoType: DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE,
+                Anonymous: DISPLAYCONFIG_MODE_INFO_0 {
+                    sourceMode: DISPLAYCONFIG_SOURCE_MODE {
+                        width: source_mode.width,
+                        height: source_mode.height,
+                        pixelFormat: source_mode.pixel_format.into(),
+                        position: source_mode.position.into(),
+                    },
+                },
+            };
+            new_windows_modes.push(windows_source_mode);
         }
-    }
 
-    pub fn apply(&mut self) -> Result<()> {
-        for path in self.display_config.paths.iter() {
-            self.apply_path(path)?;
+        // Populate target modes
+        for target_mode in self.target_modes.iter() {
+            let adapter_id = *device_path_to_adapter_id
+                .get(&target_mode.device.adapter.device_instance_path)
+                .ok_or_else(|| {
+                    anyhow!(
+                        "Adapter ID not found for device path: {:?}",
+                        target_mode.device.adapter.device_instance_path
+                    )
+                })?;
+
+            // First find existing target mode that matches desired target mode
+            let existing_target_mode_id =
+                windows_display_config.get_matching_target_mode_id(adapter_id, target_mode)?;
+
+            let windows_target_mode = DISPLAYCONFIG_MODE_INFO {
+                id: existing_target_mode_id,
+                adapterId: adapter_id.0,
+                infoType: DISPLAYCONFIG_MODE_INFO_TYPE_TARGET,
+                Anonymous: DISPLAYCONFIG_MODE_INFO_0 {
+                    targetMode: DISPLAYCONFIG_TARGET_MODE {
+                        targetVideoSignalInfo: DISPLAYCONFIG_VIDEO_SIGNAL_INFO {
+                            pixelRate: target_mode.pixel_rate.into(),
+                            hSyncFreq: target_mode.h_sync_freq.into(),
+                            vSyncFreq: target_mode.v_sync_freq.into(),
+                            activeSize: target_mode.active_size.into(),
+                            totalSize: target_mode.total_size.into(),
+                            Anonymous: DISPLAYCONFIG_VIDEO_SIGNAL_INFO_0 {
+                                videoStandard: target_mode.video_standard.discriminant() as u32,
+                            },
+                            scanLineOrdering: target_mode.scanline_ordering.into(),
+                        },
+                    },
+                },
+            };
+            new_windows_modes.push(windows_target_mode);
         }
-        self.disable_unused_paths()?;
-        self.disable_unused_modes()?;
-        Ok(())
-    }
 
-    fn apply_path(&mut self, path: &DisplayPath) -> Result<()> {
-        let source_mode = &self.display_config.source_modes[path.source.source_mode_index];
-        let target_mode = &self.display_config.target_modes[path.target.target_mode_index];
+        // Populate paths
+        for path in self.paths.iter() {
+            // Get source and target modes
+            let source_windows_mode = new_windows_modes[path.source.source_mode_index];
+            assert!(source_windows_mode.infoType == DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE);
+            let target_windows_mode =
+                new_windows_modes[path.target.target_mode_index + self.source_modes.len()];
+            assert!(target_windows_mode.infoType == DISPLAYCONFIG_MODE_INFO_TYPE_TARGET);
 
-        todo!()
-    }
+            // Get source and target mode indices
+            let source_mode_index = path.source.source_mode_index as u32;
+            let target_mode_index =
+                (path.target.target_mode_index + self.source_modes.len()) as u32;
 
-    fn disable_unused_paths(&mut self) -> Result<()> {
-        todo!()
-    }
+            let windows_path = DISPLAYCONFIG_PATH_INFO {
+                sourceInfo: DISPLAYCONFIG_PATH_SOURCE_INFO {
+                    adapterId: source_windows_mode.adapterId,
+                    id: source_windows_mode.id,
+                    Anonymous: DISPLAYCONFIG_PATH_SOURCE_INFO_0 {
+                        modeInfoIdx: source_mode_index,
+                    },
+                    statusFlags: DISPLAYCONFIG_SOURCE_IN_USE,
+                },
+                targetInfo: DISPLAYCONFIG_PATH_TARGET_INFO {
+                    adapterId: target_windows_mode.adapterId,
+                    id: target_windows_mode.id,
+                    Anonymous: DISPLAYCONFIG_PATH_TARGET_INFO_0 {
+                        modeInfoIdx: target_mode_index,
+                    },
+                    outputTechnology: path.target.output_technology.into(),
+                    rotation: path.target.rotation.into(),
+                    scaling: path.target.scaling.into(),
+                    refreshRate: path.target.refresh_rate.into(),
+                    scanLineOrdering: path.target.scanline_ordering.into(),
+                    targetAvailable: true.into(),
+                    statusFlags: DISPLAYCONFIG_TARGET_IN_USE,
+                },
+                flags: DISPLAYCONFIG_PATH_ACTIVE,
+            };
+            new_windows_paths.push(windows_path);
+        }
 
-    fn disable_unused_modes(&mut self) -> Result<()> {
-        todo!()
+        Ok(WindowsDisplayConfig::from_paths_and_modes(
+            new_windows_paths,
+            new_windows_modes,
+        )?)
     }
 }
 
@@ -487,7 +628,16 @@ pub struct DisplayTargetMode {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplaySourceDevice {
+    pub id: u32,
+    pub adapter: Adapter,
+    #[serde(with = "crate::serde_override::os_string")]
+    pub gdi_device_name: OsString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplaySourceMode {
+    pub device: DisplaySourceDevice,
     pub width: u32,
     pub height: u32,
     pub pixel_format: PixelFormat,
@@ -619,91 +769,94 @@ impl WindowsDisplayConfig {
                 paths.set_len(num_paths as usize);
                 modes.set_len(num_modes as usize);
 
-                let adapter_ids = modes
-                    .iter()
-                    .map(|m| m.adapterId.into())
-                    .chain(paths.iter().flat_map(|path| {
-                        [
-                            path.sourceInfo.adapterId.into(),
-                            path.targetInfo.adapterId.into(),
-                        ]
-                    }))
-                    .collect::<HashSet<LuidWrapper>>();
-                let ids_and_adapter_ids: HashSet<IdAndAdapterId> = modes
-                    .iter()
-                    .map(|m| IdAndAdapterId {
-                        id: m.id,
-                        adapter_id: m.adapterId.into(),
-                    })
-                    .chain(paths.iter().flat_map(|path| {
-                        [
-                            IdAndAdapterId {
-                                id: path.sourceInfo.id,
-                                adapter_id: path.sourceInfo.adapterId.into(),
-                            },
-                            IdAndAdapterId {
-                                id: path.targetInfo.id,
-                                adapter_id: path.targetInfo.adapterId.into(),
-                            },
-                        ]
-                    }))
-                    .collect();
-
-                let mut adapter_device_names = HashMap::new();
-                for adapter_id in adapter_ids {
-                    match adapter_device_names.entry(adapter_id) {
-                        hash_map::Entry::Vacant(entry) => {
-                            entry.insert(get_adapter_device_path(adapter_id.into())?);
-                        }
-                        hash_map::Entry::Occupied(_) => {}
-                    }
-                }
-
-                let mut source_device_names: HashMap<
-                    IdAndAdapterId,
-                    DISPLAYCONFIG_SOURCE_DEVICE_NAME,
-                > = HashMap::new();
-                for id_and_adapter_id in ids_and_adapter_ids.iter().copied() {
-                    match source_device_names.entry(id_and_adapter_id) {
-                        hash_map::Entry::Vacant(entry) => {
-                            if let Ok(source_device_name) = get_source_device_name(
-                                id_and_adapter_id.id,
-                                id_and_adapter_id.adapter_id.into(),
-                            ) {
-                                entry.insert(source_device_name);
-                            }
-                        }
-                        hash_map::Entry::Occupied(_) => {}
-                    }
-                }
-
-                let mut target_device_names: HashMap<
-                    IdAndAdapterId,
-                    DISPLAYCONFIG_TARGET_DEVICE_NAME,
-                > = HashMap::new();
-                for id_and_adapter_id in ids_and_adapter_ids.iter().copied() {
-                    match target_device_names.entry(id_and_adapter_id) {
-                        hash_map::Entry::Vacant(entry) => {
-                            if let Ok(target_device_name) = get_target_device_name(
-                                id_and_adapter_id.id,
-                                id_and_adapter_id.adapter_id.into(),
-                            ) {
-                                entry.insert(target_device_name);
-                            }
-                        }
-                        hash_map::Entry::Occupied(_) => {}
-                    }
-                }
-
-                return Ok(WindowsDisplayConfig {
-                    paths,
-                    modes,
-                    adapter_device_names,
-                    source_device_names,
-                    target_device_names,
-                });
+                return Ok(WindowsDisplayConfig::from_paths_and_modes(paths, modes)?);
             }
         }
+    }
+
+    pub fn from_paths_and_modes(
+        paths: Vec<DISPLAYCONFIG_PATH_INFO>,
+        modes: Vec<DISPLAYCONFIG_MODE_INFO>,
+    ) -> Result<Self> {
+        let adapter_ids = modes
+            .iter()
+            .map(|m| m.adapterId.into())
+            .chain(paths.iter().flat_map(|path| {
+                [
+                    path.sourceInfo.adapterId.into(),
+                    path.targetInfo.adapterId.into(),
+                ]
+            }))
+            .collect::<HashSet<LuidWrapper>>();
+        let ids_and_adapter_ids: HashSet<IdAndAdapterId> = modes
+            .iter()
+            .map(|m| IdAndAdapterId {
+                id: m.id,
+                adapter_id: m.adapterId.into(),
+            })
+            .chain(paths.iter().flat_map(|path| {
+                [
+                    IdAndAdapterId {
+                        id: path.sourceInfo.id,
+                        adapter_id: path.sourceInfo.adapterId.into(),
+                    },
+                    IdAndAdapterId {
+                        id: path.targetInfo.id,
+                        adapter_id: path.targetInfo.adapterId.into(),
+                    },
+                ]
+            }))
+            .collect();
+
+        let mut adapter_device_names = HashMap::new();
+        for adapter_id in adapter_ids {
+            match adapter_device_names.entry(adapter_id) {
+                hash_map::Entry::Vacant(entry) => {
+                    entry.insert(get_adapter_device_path(adapter_id.into())?);
+                }
+                hash_map::Entry::Occupied(_) => {}
+            }
+        }
+
+        let mut source_device_names: HashMap<IdAndAdapterId, DISPLAYCONFIG_SOURCE_DEVICE_NAME> =
+            HashMap::new();
+        for id_and_adapter_id in ids_and_adapter_ids.iter().copied() {
+            match source_device_names.entry(id_and_adapter_id) {
+                hash_map::Entry::Vacant(entry) => {
+                    if let Ok(source_device_name) = get_source_device_name(
+                        id_and_adapter_id.id,
+                        id_and_adapter_id.adapter_id.into(),
+                    ) {
+                        entry.insert(source_device_name);
+                    }
+                }
+                hash_map::Entry::Occupied(_) => {}
+            }
+        }
+
+        let mut target_device_names: HashMap<IdAndAdapterId, DISPLAYCONFIG_TARGET_DEVICE_NAME> =
+            HashMap::new();
+        for id_and_adapter_id in ids_and_adapter_ids.iter().copied() {
+            match target_device_names.entry(id_and_adapter_id) {
+                hash_map::Entry::Vacant(entry) => {
+                    if let Ok(target_device_name) = get_target_device_name(
+                        id_and_adapter_id.id,
+                        id_and_adapter_id.adapter_id.into(),
+                    ) {
+                        entry.insert(target_device_name);
+                    }
+                }
+                hash_map::Entry::Occupied(_) => {}
+            }
+        }
+
+        Ok(Self {
+            paths,
+            modes,
+            adapter_device_names,
+            source_device_names,
+            target_device_names,
+        })
     }
 
     pub fn set(&self) -> Result<()> {
@@ -1001,14 +1154,127 @@ impl WindowsDisplayConfig {
             );
             println!(
                 "      Monitor Friendly Device Name: {:?}",
-                wchar_null_terminated_to_os_string(&target_device_name.monitorFriendlyDeviceName)
+                get_monitor_friendly_device_name(&target_device_name)
             );
             println!(
                 "      Monitor Device Path: {:?}",
-                wchar_null_terminated_to_os_string(&target_device_name.monitorDevicePath)
+                get_monitor_device_path(&target_device_name)
             );
         } else {
             println!("    Target Device: <Unknown>");
+        }
+    }
+
+    /*
+    e.g.
+    Display Mode #0
+      ID: 41221
+      Adapter ID: LUID { LowPart: 47017, HighPart: 0 } "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+      Info Type: DISPLAYCONFIG_MODE_INFO_TYPE(2)
+      Target Mode:
+        Video Signal Info:
+          Pixel Rate: 148500000
+          HSync Freq: 67500Hz (148500000/2200)
+          VSync Freq: 60Hz
+          Active Size: DISPLAYCONFIG_2DREGION { cx: 1920, cy: 1080 }
+          Total Size: DISPLAYCONFIG_2DREGION { cx: 2200, cy: 1125 }
+          Video Standard: 255
+          Scanline Ordering: DISPLAYCONFIG_SCANLINE_ORDERING(1)
+        Target Device:
+          Flags: 0x5
+            Friendly Name From EDID
+            EDID IDs Valid
+          Output Technology: DisplayPortExternal
+          EDID Manufacture ID: 0xc41
+          EDID Product Code ID: 0xc155
+          Connector Instance: 2
+          Monitor Friendly Device Name: "PHL 243V7"
+          Monitor Device Path: "\\\\?\\DISPLAY#PHLC155#5&d10ba6e&0&UID41221#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}"
+    */
+
+    /// Get the best matching target mode for the given adapter ID and target mode
+    ///
+    /// Return error if no matching target mode is found
+    fn get_matching_target_mode_id(
+        &self,
+        adapter_id: LuidWrapper,
+        target_mode: &DisplayTargetMode,
+    ) -> Result<u32> {
+        let target_modes_with_matching_adapter_ids: Vec<_> = self
+            .modes
+            .iter()
+            .filter(|mode| {
+                mode.infoType == DISPLAYCONFIG_MODE_INFO_TYPE_TARGET
+                    && LuidWrapper::from(mode.adapterId) == adapter_id
+            })
+            .copied()
+            .collect();
+
+        let path_target_infos_with_matching_adapter_ids: Vec<_> = self
+            .paths
+            .iter()
+            .map(|path| path.targetInfo)
+            .filter(|target_info| LuidWrapper::from(target_info.adapterId) == adapter_id)
+            .collect();
+
+        let adapter_id_all_ids: HashSet<u32> = target_modes_with_matching_adapter_ids
+            .iter()
+            .map(|mode| mode.id)
+            .chain(
+                path_target_infos_with_matching_adapter_ids
+                    .iter()
+                    .map(|info| info.id),
+            )
+            .collect();
+
+        let devices_by_id = adapter_id_all_ids
+            .iter()
+            .map(|&id| get_target_device_name(id, adapter_id.into()).map(|name| (id, name)))
+            .collect::<Result<HashMap<u32, DISPLAYCONFIG_TARGET_DEVICE_NAME>>>()?;
+
+        if let Some(target_mode_device_path) = &target_mode.device.monitor_device_path {
+            let devices_with_matching_device_path: HashMap<u32, DISPLAYCONFIG_TARGET_DEVICE_NAME> =
+                devices_by_id
+                    .iter()
+                    .map(|(&id, &device)| (id, device))
+                    .filter(|(_, device)| {
+                        get_monitor_device_path(device).as_ref() == Some(target_mode_device_path)
+                    })
+                    .collect();
+
+            match devices_with_matching_device_path.len() {
+                0 => {
+                    // Enumerate all devices by using EnumerateDisplayDevices
+                    // let mut devices = Vec::new();
+                    // let mut device_info = DISPLAY_DEVICE {
+                    //     cb: std::mem::size_of::<DISPLAY_DEVICE>() as u32,
+                    //     ..Default::default()
+                    // };
+                    // while EnumDisplayDevices(&mut device_info, 0, &mut device_info, 0) {
+                    //     devices.push(device_info);
+                    // }
+
+                    // Fallback
+                    println!(
+                        "No matching target mode found for device path, using fallback {}: {:?}",
+                        target_mode.device.id, target_mode_device_path
+                    );
+                    Ok(target_mode.device.id)
+                }
+                1 => Ok(devices_with_matching_device_path
+                    .into_iter()
+                    .next()
+                    .unwrap()
+                    .0),
+                _ => {
+                    bail!(
+                        "Multiple matching target modes found for device path: {:?}",
+                        target_mode_device_path
+                    );
+                }
+            }
+        } else {
+            todo!()
         }
     }
 }
@@ -1041,7 +1307,7 @@ pub fn get_adapter_device_path(adapter_id: windows::Win32::Foundation::LUID) -> 
             size: std::mem::size_of::<DISPLAYCONFIG_ADAPTER_NAME>()
                 .try_into()
                 .map_err(|e| {
-                    anyhow::anyhow!(
+                    anyhow!(
                         "Failed to convert size of DISPLAYCONFIG_ADAPTER_NAME to u32: {}",
                         e
                     )
@@ -1067,7 +1333,7 @@ pub fn get_adapter_device_path(adapter_id: windows::Win32::Foundation::LUID) -> 
 
 pub fn get_source_device_name(
     id: u32,
-    adapter_id: windows::Win32::Foundation::LUID,
+    adapter_id: LuidWrapper,
 ) -> Result<DISPLAYCONFIG_SOURCE_DEVICE_NAME> {
     let mut device_name = DISPLAYCONFIG_SOURCE_DEVICE_NAME {
         header: DISPLAYCONFIG_DEVICE_INFO_HEADER {
@@ -1075,12 +1341,12 @@ pub fn get_source_device_name(
             size: std::mem::size_of::<DISPLAYCONFIG_SOURCE_DEVICE_NAME>()
                 .try_into()
                 .map_err(|e| {
-                    anyhow::anyhow!(
+                    anyhow!(
                         "Failed to convert size of DISPLAYCONFIG_SOURCE_DEVICE_NAME to u32: {}",
                         e
                     )
                 })?,
-            adapterId: adapter_id,
+            adapterId: adapter_id.into(),
             id,
         },
         ..Default::default()
@@ -1107,7 +1373,7 @@ pub fn get_target_device_name(
             size: std::mem::size_of::<DISPLAYCONFIG_TARGET_DEVICE_NAME>()
                 .try_into()
                 .map_err(|e| {
-                    anyhow::anyhow!(
+                    anyhow!(
                         "Failed to convert size of DISPLAYCONFIG_TARGET_DEVICE_NAME to u32: {}",
                         e
                     )

@@ -4,6 +4,13 @@
   "display_config": {
     "source_modes": [
       {
+        "device": {
+          "id": 2,
+          "adapter": {
+            "device_instance_path": "\\\\?\\PCI#VEN_10DE&DEV_1E84&SUBSYS_450919DA&REV_A1#4&1fc990d7&0&0019#{5b45201d-f2f2-4f3b-85bb-30ff1f953599}"
+          },
+          "gdi_device_name": "\\\\.\\DISPLAY3"
+        },
         "width": 4096,
         "height": 2160,
         "pixel_format": 4,
