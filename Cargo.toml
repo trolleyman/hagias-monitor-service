@@ -1,4 +1,3 @@
-
 [workspace]
 members = ["hagias-monitor-service", "xtask"]
 default-members = ["hagias-monitor-service"]

@@ -61,6 +61,35 @@ fn copy_file(src: &Path, dest: &Path) -> Result<()> {
     Ok(())
 }
 
+fn copy_dir(src: &Path, dest: &Path) -> Result<()> {
+    let src_normalized = normalize_path(src);
+    let dest_normalized = normalize_path(dest);
+    let dest_dir = dest_normalized.parent().unwrap_or(&dest_normalized);
+
+    print_cargo_style(
+        &format!("`{}` to `{}`", src_normalized.display(), dest_dir.display()),
+        "Copying",
+    );
+
+    copy_dir_silent(src, dest)?;
+    Ok(())
+}
+
+fn copy_dir_silent(src: &Path, dest: &Path) -> Result<()> {
+    std::fs::create_dir_all(dest)?;
+    for entry in std::fs::read_dir(src)? {
+        let entry = entry?;
+        let src_path = entry.path();
+        let dest_path = dest.join(src_path.file_name().unwrap());
+        if src_path.is_dir() {
+            copy_dir_silent(&src_path, &dest_path)?;
+        } else {
+            std::fs::copy(&src_path, &dest_path)?;
+        }
+    }
+    Ok(())
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -102,6 +131,12 @@ fn main() -> Result<()> {
                 let src_path = workspace_root.join(file);
                 let target_path = pack_dir.join(file);
                 copy_file(&src_path, &target_path)?;
+            }
+
+            for dir in ["templates"] {
+                let src_path = workspace_root.join(dir);
+                let target_path = pack_dir.join(dir);
+                copy_dir(&src_path, &target_path)?;
             }
 
             print_cargo_style("package", "Finished");

@@ -7,13 +7,13 @@ edition.workspace = true
 anyhow = { version = "1.0.97", features = ["backtrace"] }
 bitflags = "2.9.0"
 clap = { version = "4.5.34", features = ['derive'] }
-crossterm = { version = "0.27", features = ["event-stream", ] }
+crossterm = { version = "0.27", features = ["event-stream"] }
 derive_more = { version = "2.0.1", features = ["std", "into_iterator"] }
 html-escape = "0.2.13"
 rocket = "0.5.1"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-tokio = {version = "1.44.2", features = ["io-util"]}
+tokio = { version = "1.44.2", features = ["io-util"] }
 unit-enum = "1.4.1"
 winapi = { version = "0.3.9", features = ["winnt"] }
 windows = { version = "0.61.1", features = [
@@ -23,3 +23,5 @@ windows = { version = "0.61.1", features = [
     "Wdk_Graphics_Direct3D",
 ] }
 futures = "0.3"
+tera = "1.19.1"
+rocket_dyn_templates = { version = "0.2.0", features = ["tera"] }

@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use clap::Parser;
 use config::Config;
+use rocket_dyn_templates::Template;
 
 pub mod command;
 pub mod config;
@@ -40,6 +41,7 @@ pub async fn run() -> Result<i32> {
         .configure(figment)
         .mount("/", rocket::routes![index::index, index::apply_config])
         .manage(config)
+        .attach(Template::fairing())
         .launch()
         .await
         .context("Rocket error")?;
