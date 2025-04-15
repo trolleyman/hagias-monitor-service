@@ -62,6 +62,12 @@ pub async fn index(
                 top: 10px;
                 right: 10px;
             }
+            .config-emoji {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                font-size: 1.2em;
+            }
         </style>
     </head>
     <body>
@@ -73,11 +79,17 @@ pub async fn index(
     for layout in layouts {
         html.push_str(&format!(
             r#"<button class="config-item" onclick="applyConfig('{0}')">
+                <span class="config-emoji">{2}</span>
                 <span class="config-id">{0}</span>
                 <span class="config-name">{1}</span>
             </button>"#,
             html_escape::encode_safe(&layout.id),
-            html_escape::encode_safe(&layout.name)
+            html_escape::encode_safe(&layout.name),
+            layout
+                .emoji
+                .as_ref()
+                .map(|s| html_escape::encode_safe(s))
+                .unwrap_or_default()
         ));
     }
 

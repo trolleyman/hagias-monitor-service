@@ -23,9 +23,20 @@ pub enum Command {
 #[derive(Debug, Clone, clap::Subcommand)]
 pub enum LayoutCommand {
     // Store the current monitor configuration as the config named `name`
-    Store { id: String, name: String },
+    Store {
+        /// The ID of the layout
+        id: String,
+        /// The human-readable name of the layout
+        name: String,
+        /// The emoji to display for the layout
+        #[arg(short, long)]
+        emoji: Option<String>,
+    },
     // Apply the config with ID `id`
-    Apply { id: String },
+    Apply {
+        /// The ID of the layout
+        id: String,
+    },
     // List all available configurations
     List,
     // Interactively rearrange monitor layouts
@@ -35,11 +46,11 @@ pub enum LayoutCommand {
 pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
     match command {
         Command::Layout(layout_command) => match layout_command {
-            LayoutCommand::Store { id, name } => {
+            LayoutCommand::Store { id, name, emoji } => {
                 // TODO: Lock layouts
                 println!("Loading layouts...");
                 let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                layouts.add_current(&id, &name).await?;
+                layouts.add_current(&id, &name, emoji.as_deref()).await?;
                 layouts.save(&config.layouts_path.relative()).await?;
                 println!("Monitor layout {} \"{}\" stored successfully", id, name);
                 Ok(Some(0))
@@ -70,7 +81,15 @@ pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32
                 } else {
                     println!("Available monitor configurations:");
                     for layout in layouts {
-                        println!("  {} - {:?}", layout.id, layout.name);
+                        println!(
+                            "  {} - {:?}{}",
+                            layout.id,
+                            layout.name,
+                            layout
+                                .emoji
+                                .map(|s| format!(" ({})", s))
+                                .unwrap_or_default()
+                        );
                     }
                 }
                 Ok(Some(0))

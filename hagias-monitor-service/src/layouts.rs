@@ -65,12 +65,13 @@ impl Layouts {
         Ok(())
     }
 
-    pub async fn add_current(&mut self, id: &str, name: &str) -> Result<()> {
+    pub async fn add_current(&mut self, id: &str, name: &str, emoji: Option<&str>) -> Result<()> {
         let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
         let layout = DisplayLayout::from_windows(&windows_display_config)?;
         let named_layout = NamedLayout {
             id: id.into(),
             name: name.into(),
+            emoji: emoji.map(|s| s.into()),
             layout,
         };
         self.add_layout(named_layout);
@@ -104,5 +105,9 @@ impl std::ops::Index<usize> for Layouts {
 pub struct NamedLayout {
     pub id: String,
     pub name: String,
+    #[serde(default)]
+    pub emoji: Option<String>,
+    #[serde(default)]
+    pub hidden: bool,
     pub layout: DisplayLayout,
 }

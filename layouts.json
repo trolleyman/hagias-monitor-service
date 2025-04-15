@@ -1,6 +1,7 @@
 [
   {
     "id": "normal",
+    "emoji": "🖥️🖥️",
     "name": "Normal",
     "layout": {
       "source_modes": [
@@ -145,6 +146,7 @@
   },
   {
     "id": "tv",
+    "emoji": "📺",
     "name": "TV",
     "layout": {
       "source_modes": [
@@ -223,6 +225,7 @@
   },
   {
     "id": "with-tv",
+    "emoji": "🖥️🖥️📺",
     "name": "With TV",
     "layout": {
       "source_modes": [
@@ -433,6 +436,7 @@
   },
   {
     "id": "with-tv-primary",
+    "emoji": "📺🖥️🖥️",
     "name": "With TV (Primary)",
     "layout": {
       "source_modes": [
@@ -643,6 +647,7 @@
   },
   {
     "id": "one",
+    "emoji": "🖥️",
     "name": "One Monitor",
     "layout": {
       "source_modes": [
