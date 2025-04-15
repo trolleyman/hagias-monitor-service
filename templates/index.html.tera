@@ -161,7 +161,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="fixed top-5 right-5 z-50" id="toastContainer"></div>
+<div class="fixed top-0 right-5 z-50 w-[400px] pointer-events-none py-5" id="toastContainer"></div>
 <div class="max-w-7xl mx-auto p-5">
     <h1 class="text-4xl font-semibold text-center mb-8">Monitor Configurations</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -183,52 +183,112 @@
 
 {% block scripts %}
 <script>
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
+    class ToastManager {
+        constructor() {
+            this.container = document.getElementById('toastContainer');
+            this.toasts = new Set();
+            this.toastHeight = 76; // Base height (64px) + margin (12px)
+            this.initialOffset = 20; // Initial padding from the top
+        }
 
-        const baseClasses = 'flex items-center justify-between min-w-[300px] p-4 mb-3 rounded-lg bg-secondary-bg text-primary-text shadow-lg animate-slideIn';
-        const borderClasses = type === 'success' ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500';
-        toast.className = `${baseClasses} ${borderClasses}`;
+        show(message, type = 'success') {
+            const toast = this.createToast(message, type);
+            this.toasts.add(toast);
+            this.container.appendChild(toast);
 
-        const messageSpan = document.createElement('span');
-        messageSpan.textContent = message;
+            // Calculate initial position based on existing toasts, including initial offset
+            const position = this.toasts.size - 1;
+            toast.style.top = `${this.initialOffset + (position * this.toastHeight)}px`;
 
-        const closeButton = document.createElement('button');
-        closeButton.className = 'ml-4 text-secondary-text hover:text-primary-text text-xl';
-        closeButton.innerHTML = '&times;';
-        closeButton.onclick = () => {
-            toast.classList.remove('animate-slideIn');
-            toast.classList.add('animate-slideOut');
-            setTimeout(() => toast.remove(), 300);
-        };
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
+            });
 
-        toast.appendChild(messageSpan);
-        toast.appendChild(closeButton);
-        container.appendChild(toast);
+            if (type === 'success') {
+                setTimeout(() => this.removeToast(toast), 3000);
+            }
+        }
 
-        if (type === 'success') {
-            setTimeout(() => {
-                toast.classList.remove('animate-slideIn');
-                toast.classList.add('animate-slideOut');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        createToast(message, type) {
+            const toast = document.createElement('div');
+
+            toast.className = `
+                fixed right-0 w-[400px] p-4 mb-3
+                flex items-center gap-4
+                bg-secondary-bg rounded-lg shadow-lg
+                pointer-events-auto
+                transition-all duration-300 ease-out
+                ${type === 'success' ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500'}
+            `.trim();
+
+            toast.style.transform = 'translateX(100%)';
+            toast.style.opacity = '0';
+
+            const messageEl = document.createElement('span');
+            messageEl.className = 'flex-1 min-w-0 break-words';
+            messageEl.textContent = message;
+            toast.appendChild(messageEl);
+
+            const closeButton = document.createElement('button');
+            closeButton.className = 'flex-shrink-0 text-secondary-text hover:text-primary-text text-xl';
+            closeButton.innerHTML = '&times;';
+            closeButton.onclick = () => this.removeToast(toast);
+            toast.appendChild(closeButton);
+
+            return toast;
+        }
+
+        removeToast(toast) {
+            if (toast.isRemoving) return;
+            toast.isRemoving = true;
+
+            toast.style.transform = 'translateX(100%)';
+            toast.style.opacity = '0';
+
+            toast.addEventListener('transitionend', () => {
+                this.toasts.delete(toast);
+                toast.remove();
+                this.updatePositions();
+            }, { once: true });
+        }
+
+        updatePositions() {
+            const toastArray = Array.from(this.toasts);
+
+            toastArray.forEach((toast, index) => {
+                // Include initial offset in position calculation
+                const newTop = this.initialOffset + (index * this.toastHeight);
+
+                if (parseInt(toast.style.top) !== newTop) {
+                    toast.style.transition = 'all 0.3s ease-out';
+                    toast.style.top = `${newTop}px`;
+                }
+            });
         }
     }
 
+    // Initialize toast manager
+    const toastManager = new ToastManager();
+
+    window.addEventListener('resize', () => {
+        requestAnimationFrame(() => toastManager.updatePositions());
+    });
+
+    // Modified applyConfig to use new toast manager
     async function applyConfig(id) {
         try {
             const response = await fetch('/api/apply/' + id, {
                 method: 'POST'
             });
             if (response.ok) {
-                showToast('Configuration applied successfully!', 'success');
+                toastManager.show('Configuration applied successfully!', 'success');
             } else {
                 const errorText = await response.text();
-                showToast(`Failed to apply configuration: ${errorText}`, 'error');
+                toastManager.show(`Failed to apply configuration: ${errorText}`, 'error');
             }
         } catch (error) {
-            showToast('Error applying configuration: ' + error, 'error');
+            toastManager.show(`Error applying configuration: ${error}`, 'error');
         }
     }
 </script>
