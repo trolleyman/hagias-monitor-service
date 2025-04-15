@@ -2,9 +2,47 @@
 <html>
 <head>
     <title>{% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            bg: '#1a1a1a',
+                            text: '#ffffff',
+                        },
+                        secondary: {
+                            bg: '#2d2d2d',
+                            text: '#b3b3b3',
+                        },
+                        accent: {
+                            DEFAULT: '#4a90e2',
+                            hover: '#3a7bc8',
+                        },
+                    },
+                },
+                keyframes: {
+                    slideIn: {
+                        'from': { transform: 'translateX(100%)', opacity: '0' },
+                        'to': { transform: 'translateX(0)', opacity: '1' },
+                    },
+                    slideOut: {
+                        'from': { transform: 'translateX(0)', opacity: '1' },
+                        'to': { transform: 'translateX(100%)', opacity: '0' },
+                    },
+                },
+                animation: {
+                    slideIn: 'slideIn 0.3s ease-out',
+                    slideOut: 'slideOut 0.3s ease-out',
+                },
+            },
+        }
+    </script>
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="bg-primary-bg text-primary-text">
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
 </body>
