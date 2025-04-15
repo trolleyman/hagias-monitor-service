@@ -27,6 +27,8 @@ pub async fn index(
                 --text-secondary: #b3b3b3;
                 --accent-color: #4a90e2;
                 --hover-color: #3a7bc8;
+                --success-color: #4caf50;
+                --error-color: #f44336;
             }
 
             body {
@@ -105,9 +107,76 @@ pub async fn index(
                     grid-template-columns: 1fr;
                 }
             }
+
+            .toast-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+            }
+
+            .toast {
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                padding: 16px 24px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                min-width: 300px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                animation: slideIn 0.3s ease-out;
+                border-left: 4px solid;
+            }
+
+            .toast.success {
+                border-left-color: var(--success-color);
+            }
+
+            .toast.error {
+                border-left-color: var(--error-color);
+            }
+
+            .toast-close {
+                background: none;
+                border: none;
+                color: var(--text-secondary);
+                cursor: pointer;
+                font-size: 1.2em;
+                padding: 0 8px;
+                margin-left: 16px;
+            }
+
+            .toast-close:hover {
+                color: var(--text-primary);
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
         </style>
     </head>
     <body>
+        <div class="toast-container" id="toastContainer"></div>
         <h1>Monitor Configurations</h1>
         <div class="config-grid">
     "#,
@@ -134,18 +203,47 @@ pub async fn index(
         r#"
         </div>
         <script>
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+
+                const messageSpan = document.createElement('span');
+                messageSpan.textContent = message;
+
+                const closeButton = document.createElement('button');
+                closeButton.className = 'toast-close';
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = () => {
+                    toast.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => toast.remove(), 300);
+                };
+
+                toast.appendChild(messageSpan);
+                toast.appendChild(closeButton);
+                container.appendChild(toast);
+
+                if (type === 'success') {
+                    setTimeout(() => {
+                        toast.style.animation = 'slideOut 0.3s ease-out';
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                }
+            }
+
             async function applyConfig(id) {
                 try {
                     const response = await fetch('/api/apply/' + id, {
                         method: 'POST'
                     });
                     if (response.ok) {
-                        alert('Configuration applied successfully!');
+                        showToast('Configuration applied successfully!', 'success');
                     } else {
-                        alert('Failed to apply configuration');
+                        const errorText = await response.text();
+                        showToast(`Failed to apply configuration: ${errorText}`, 'error');
                     }
                 } catch (error) {
-                    alert('Error applying configuration: ' + error);
+                    showToast('Error applying configuration: ' + error, 'error');
                 }
             }
         </script>
