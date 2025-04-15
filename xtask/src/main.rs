@@ -1,7 +1,10 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
+
+const GREEN_BOLD: &str = "\x1b[1;32m";
+const RESET: &str = "\x1b[0m";
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -20,18 +23,59 @@ enum Commands {
     },
 }
 
+fn print_cargo_style(message: &str, action: &str) {
+    println!("{}{:>12} {}{}", GREEN_BOLD, action, RESET, message);
+}
+
+fn canonicalize_or_original(path: &Path) -> PathBuf {
+    std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
+}
+
+fn normalize_path(path: &Path) -> PathBuf {
+    let current_dir = match std::env::current_dir() {
+        Ok(dir) => canonicalize_or_original(&dir),
+        Err(_) => return path.to_path_buf(),
+    };
+
+    let canonical_path = canonicalize_or_original(path);
+
+    if let Ok(relative) = canonical_path.strip_prefix(&current_dir) {
+        return relative.to_path_buf();
+    }
+    if let Ok(relative) = path.strip_prefix(&current_dir) {
+        return relative.to_path_buf();
+    }
+    canonical_path
+}
+
+fn copy_file(src: &Path, dest: &Path) -> Result<()> {
+    let src_normalized = normalize_path(src);
+    let dest_normalized = normalize_path(dest);
+    let dest_dir = dest_normalized.parent().unwrap_or(&dest_normalized);
+
+    print_cargo_style(
+        &format!("`{}` to `{}`", src_normalized.display(), dest_dir.display()),
+        "Copying",
+    );
+    std::fs::copy(src, dest)?;
+    Ok(())
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
         Commands::Pack { pack_dir } => {
             // Create target directory if it doesn't exist
-            eprintln!("Packaging to: {}", pack_dir.display());
+            print_cargo_style(
+                &format!("to `{}`", normalize_path(&pack_dir).display()),
+                "Packaging",
+            );
             std::fs::create_dir_all(&pack_dir)?;
 
             // Build the release binary
             let cargo_path = env!("CARGO");
-            eprintln!("Running cargo build --release");
+            print_cargo_style("release binary", "Building");
             let status = Command::new(cargo_path)
                 .args(["build", "--release"])
                 .status()?;
@@ -48,26 +92,17 @@ fn main() -> Result<()> {
                 .join("release")
                 .join("hagias-monitor-service.exe");
             let target_path = pack_dir.join("hagias-monitor-service.exe");
-
-            eprintln!(
-                "Copying {} to {}",
-                binary_path.display(),
-                target_path.display()
-            );
-            std::fs::copy(&binary_path, &target_path)?;
+            copy_file(&binary_path, &target_path)?;
 
             // Copy layouts.json and Rocket.toml to the target directory
             let hagias_dir = workspace_root.join("hagias-monitor-service");
             for file in ["layouts.json", "Rocket.toml"] {
                 let src_path = hagias_dir.join(file);
                 let target_path = pack_dir.join(file);
-                eprintln!(
-                    "Copying {} to {}",
-                    src_path.display(),
-                    target_path.display()
-                );
-                std::fs::copy(&src_path, &target_path)?;
+                copy_file(&src_path, &target_path)?;
             }
+
+            print_cargo_style("package", "Finished");
         }
     }
 
