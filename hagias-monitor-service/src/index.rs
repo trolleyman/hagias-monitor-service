@@ -76,7 +76,7 @@ pub async fn index(
     "#,
     );
 
-    for layout in layouts {
+    for layout in layouts.iter().filter(|l| !l.hidden) {
         html.push_str(&format!(
             r#"<button class="config-item" onclick="applyConfig('{0}')">
                 <span class="config-emoji">{2}</span>

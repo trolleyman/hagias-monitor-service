@@ -72,6 +72,7 @@ impl Layouts {
             id: id.into(),
             name: name.into(),
             emoji: emoji.map(|s| s.into()),
+            hidden: false,
             layout,
         };
         self.add_layout(named_layout);
@@ -90,6 +91,10 @@ impl Layouts {
 
     pub fn get_layout(&self, id: &str) -> Option<&NamedLayout> {
         self.0.iter().find(|l| l.id == id)
+    }
+
+    pub fn get_layout_mut(&mut self, id: &str) -> Option<&mut NamedLayout> {
+        self.0.iter_mut().find(|l| l.id == id)
     }
 }
 

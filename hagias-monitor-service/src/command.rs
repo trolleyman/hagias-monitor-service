@@ -41,6 +41,16 @@ pub enum LayoutCommand {
     List,
     // Interactively rearrange monitor layouts
     Rearrange,
+    // Hide a layout
+    Hide {
+        /// The ID of the layout to hide
+        id: String,
+    },
+    // Unhide a layout
+    Unhide {
+        /// The ID of the layout to unhide
+        id: String,
+    },
 }
 
 pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
@@ -82,13 +92,14 @@ pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32
                     println!("Available monitor configurations:");
                     for layout in layouts {
                         println!(
-                            "  {} - {:?}{}",
+                            "  {} - {:?}{}{}",
                             layout.id,
                             layout.name,
                             layout
                                 .emoji
                                 .map(|s| format!(" ({})", s))
-                                .unwrap_or_default()
+                                .unwrap_or_default(),
+                            if layout.hidden { " [hidden]" } else { "" }
                         );
                     }
                 }
@@ -105,6 +116,34 @@ pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32
                     Rearranger::new(&mut layouts, config.layouts_path.relative(), &mut stdout);
                 rearranger.run().await?;
                 Ok(Some(0))
+            }
+            LayoutCommand::Hide { id } => {
+                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+                if let Some(layout) = layouts.get_layout_mut(&id) {
+                    let id = layout.id.clone();
+                    let name = layout.name.clone();
+                    layout.hidden = true;
+                    layouts.save(&config.layouts_path.relative()).await?;
+                    println!("Monitor layout {} \"{}\" hidden successfully", id, name);
+                    Ok(Some(0))
+                } else {
+                    println!("Monitor layout {} not found", id);
+                    Ok(Some(1))
+                }
+            }
+            LayoutCommand::Unhide { id } => {
+                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+                if let Some(layout) = layouts.get_layout_mut(&id) {
+                    let id = layout.id.clone();
+                    let name = layout.name.clone();
+                    layout.hidden = false;
+                    layouts.save(&config.layouts_path.relative()).await?;
+                    println!("Monitor layout {} \"{}\" unhidden successfully", id, name);
+                    Ok(Some(0))
+                } else {
+                    println!("Monitor layout {} not found", id);
+                    Ok(Some(1))
+                }
             }
         },
     }
