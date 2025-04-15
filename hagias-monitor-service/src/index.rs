@@ -20,53 +20,90 @@ pub async fn index(
     <head>
         <title>Monitor Configurations</title>
         <style>
+            :root {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #2d2d2d;
+                --text-primary: #ffffff;
+                --text-secondary: #b3b3b3;
+                --accent-color: #4a90e2;
+                --hover-color: #3a7bc8;
+            }
+
             body {
-                font-family: Arial, sans-serif;
+                font-family: 'Segoe UI', Arial, sans-serif;
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
+                background-color: var(--bg-primary);
+                color: var(--text-primary);
             }
+
+            h1 {
+                color: var(--text-primary);
+                margin-bottom: 30px;
+                font-size: 2.5em;
+                font-weight: 600;
+                text-align: center;
+            }
+
             .config-grid {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
                 gap: 20px;
                 padding: 0;
             }
+
             .config-item {
-                background: #f5f5f5;
-                padding: 20px;
-                border-radius: 8px;
+                background: var(--bg-secondary);
+                padding: 25px;
+                border-radius: 12px;
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
                 position: relative;
                 cursor: pointer;
-                border: none;
-                transition: all 0.3s;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                transition: all 0.3s ease;
             }
+
             .config-item:hover {
-                background: #e0e0e0;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                background: var(--accent-color);
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             }
+
             .config-name {
-                font-size: 1.2em;
-                font-weight: bold;
-                color: #333;
+                font-size: 1.3em;
+                font-weight: 600;
+                color: var(--text-primary);
                 margin-top: 20px;
             }
+
             .config-id {
-                color: #666;
+                color: var(--text-secondary);
                 font-size: 0.9em;
                 position: absolute;
-                top: 10px;
-                right: 10px;
+                top: 15px;
+                right: 15px;
+                background: rgba(0, 0, 0, 0.2);
+                padding: 4px 8px;
+                border-radius: 4px;
             }
+
             .config-emoji {
                 position: absolute;
-                top: 10px;
-                left: 10px;
-                font-size: 1.2em;
+                top: 15px;
+                left: 15px;
+                font-size: 1.5em;
+                background: rgba(0, 0, 0, 0.2);
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+
+            @media (max-width: 768px) {
+                .config-grid {
+                    grid-template-columns: 1fr;
+                }
             }
         </style>
     </head>
@@ -121,7 +158,7 @@ pub async fn index(
 }
 
 #[post("/api/apply/<id>")]
-pub async fn apply_config(id: String, config: &State<Config>) -> status::Custom<String> {
+pub async fn apply_config(id: &str, config: &State<Config>) -> status::Custom<String> {
     match Layouts::load(&config.layouts_path.relative()).await {
         Ok(layouts) => match layouts.get_layout(&id) {
             Some(layout) => match layout.layout.apply() {
