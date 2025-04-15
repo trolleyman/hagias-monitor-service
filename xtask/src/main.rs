@@ -18,7 +18,7 @@ enum Commands {
     /// Package the binary into the bin folder
     Pack {
         /// Output directory for the packaged binary
-        #[arg(short, long, default_value = "pack")]
+        #[arg(default_value = "pack")]
         pack_dir: PathBuf,
     },
 }
