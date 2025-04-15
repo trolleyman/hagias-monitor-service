@@ -1,7 +1,9 @@
 use anyhow::{Context, Result};
 use clap::Parser;
+use config::Config;
 
 pub mod command;
+pub mod config;
 pub mod display;
 pub mod index;
 pub mod layouts;
@@ -23,14 +25,21 @@ pub async fn main() -> Result<()> {
 pub async fn run() -> Result<i32> {
     let args = Args::parse();
 
+    let figment = rocket::Config::figment();
+    let config = figment
+        .extract::<Config>()
+        .context("Failed to extract config")?;
+
     if let Some(command) = args.command {
-        if let Some(code) = command::run_command(command).await? {
+        if let Some(code) = command::run_command(command, &config).await? {
             return Ok(code);
         }
     }
 
     rocket::build()
+        .configure(figment)
         .mount("/", rocket::routes![index::index, index::apply_config])
+        .manage(config)
         .launch()
         .await
         .context("Rocket error")?;

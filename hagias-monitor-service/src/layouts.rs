@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use anyhow::{Context, Result};
 use derive_more::IntoIterator;
@@ -15,10 +15,6 @@ use crate::{
 pub struct Layouts(Vec<NamedLayout>);
 
 impl Layouts {
-    pub fn get_path() -> PathBuf {
-        PathBuf::from("layouts.json")
-    }
-
     pub fn new() -> Self {
         Self(Vec::new())
     }
@@ -39,18 +35,17 @@ impl Layouts {
         self.0.swap(a, b);
     }
 
-    pub async fn load() -> Result<Self> {
-        Self::load_private()
+    pub async fn load(layouts_path: &Path) -> Result<Self> {
+        Self::load_private(layouts_path)
             .await
-            .with_context(|| format!("Failed to load layouts at {}", Self::get_path().display()))
+            .with_context(|| format!("Failed to load layouts at {}", layouts_path.display()))
     }
 
-    async fn load_private() -> Result<Self> {
-        let path = Self::get_path();
-        Ok(if !tokio::fs::try_exists(&path).await? {
+    async fn load_private(layouts_path: &Path) -> Result<Self> {
+        Ok(if !tokio::fs::try_exists(layouts_path).await? {
             Self::new()
         } else {
-            let mut file = tokio::fs::File::open(&path).await?;
+            let mut file = tokio::fs::File::open(layouts_path).await?;
             let mut bytes = Vec::with_capacity(file.metadata().await?.len() as usize);
             file.read_to_end(&mut bytes).await?;
             let json = String::from_utf8(bytes).context("Invalid UTF-8")?;
@@ -58,16 +53,15 @@ impl Layouts {
         })
     }
 
-    pub async fn save(&self) -> Result<()> {
-        self.save_private()
+    pub async fn save(&self, layouts_path: &Path) -> Result<()> {
+        self.save_private(layouts_path)
             .await
-            .with_context(|| format!("Failed to save layouts at {}", Self::get_path().display()))
+            .with_context(|| format!("Failed to save layouts at {}", layouts_path.display()))
     }
 
-    async fn save_private(&self) -> Result<()> {
-        let path = Self::get_path();
+    async fn save_private(&self, layouts_path: &Path) -> Result<()> {
         let json = serde_json::to_string_pretty(self)?;
-        tokio::fs::write(path, json).await?;
+        tokio::fs::write(layouts_path, json).await?;
         Ok(())
     }
 

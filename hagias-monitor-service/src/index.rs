@@ -1,15 +1,18 @@
 use anyhow::Result;
-use rocket::get;
 use rocket::http::Status;
 use rocket::post;
 use rocket::response::content::RawHtml;
 use rocket::response::status;
+use rocket::{State, get};
 
+use crate::config::Config;
 use crate::layouts::Layouts;
 
 #[get("/")]
-pub async fn index() -> Result<RawHtml<String>, rocket::response::Debug<anyhow::Error>> {
-    let layouts = Layouts::load().await?;
+pub async fn index(
+    config: &State<Config>,
+) -> Result<RawHtml<String>, rocket::response::Debug<anyhow::Error>> {
+    let layouts = Layouts::load(&config.layouts_path.relative()).await?;
     let mut html = String::from(
         r#"
     <!DOCTYPE html>
@@ -106,8 +109,8 @@ pub async fn index() -> Result<RawHtml<String>, rocket::response::Debug<anyhow::
 }
 
 #[post("/api/apply/<id>")]
-pub async fn apply_config(id: String) -> status::Custom<String> {
-    match Layouts::load().await {
+pub async fn apply_config(id: String, config: &State<Config>) -> status::Custom<String> {
+    match Layouts::load(&config.layouts_path.relative()).await {
         Ok(layouts) => match layouts.get_layout(&id) {
             Some(layout) => match layout.layout.apply() {
                 Ok(_) => status::Custom(

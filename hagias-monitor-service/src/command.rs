@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use anyhow::Result;
 use crossterm::{
     QueueableCommand,
@@ -10,19 +8,20 @@ use crossterm::{
     terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode},
 };
 use futures::StreamExt;
+use std::{io::Write, path::PathBuf};
 use tokio::io::AsyncBufReadExt;
 
-use crate::layouts::Layouts;
+use crate::{config::Config, layouts::Layouts};
 
 #[derive(Debug, Clone, clap::Subcommand)]
 pub enum Command {
     /// Edit configuration
     #[command(subcommand)]
-    Config(ConfigCommand),
+    Layout(LayoutCommand),
 }
 
 #[derive(Debug, Clone, clap::Subcommand)]
-pub enum ConfigCommand {
+pub enum LayoutCommand {
     // Store the current monitor configuration as the config named `name`
     Store { id: String, name: String },
     // Apply the config with ID `id`
@@ -33,20 +32,20 @@ pub enum ConfigCommand {
     Rearrange,
 }
 
-pub async fn run_command(command: Command) -> Result<Option<i32>> {
+pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
     match command {
-        Command::Config(config_command) => match config_command {
-            ConfigCommand::Store { id, name } => {
+        Command::Layout(layout_command) => match layout_command {
+            LayoutCommand::Store { id, name } => {
                 // TODO: Lock layouts
                 println!("Loading layouts...");
-                let mut layouts = Layouts::load().await?;
+                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
                 layouts.add_current(&id, &name).await?;
-                layouts.save().await?;
+                layouts.save(&config.layouts_path.relative()).await?;
                 println!("Monitor layout {} \"{}\" stored successfully", id, name);
                 Ok(Some(0))
             }
-            ConfigCommand::Apply { id } => {
-                let layouts = Layouts::load().await?;
+            LayoutCommand::Apply { id } => {
+                let layouts = Layouts::load(&config.layouts_path.relative()).await?;
                 let layout = layouts.get_layout(&id);
                 if let Some(layout) = layout {
                     println!(
@@ -64,8 +63,8 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
                     Ok(Some(1))
                 }
             }
-            ConfigCommand::List => {
-                let layouts = Layouts::load().await?;
+            LayoutCommand::List => {
+                let layouts = Layouts::load(&config.layouts_path.relative()).await?;
                 if layouts.is_empty() {
                     println!("No monitor configurations found");
                 } else {
@@ -76,14 +75,15 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
                 }
                 Ok(Some(0))
             }
-            ConfigCommand::Rearrange => {
-                let mut layouts = Layouts::load().await?;
+            LayoutCommand::Rearrange => {
+                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
                 if layouts.is_empty() {
                     println!("No monitor configurations found to rearrange");
                     return Ok(Some(1));
                 }
                 let mut stdout = std::io::stdout();
-                let mut rearranger = Rearranger::new(&mut layouts, &mut stdout);
+                let mut rearranger =
+                    Rearranger::new(&mut layouts, config.layouts_path.relative(), &mut stdout);
                 rearranger.run().await?;
                 Ok(Some(0))
             }
@@ -93,6 +93,7 @@ pub async fn run_command(command: Command) -> Result<Option<i32>> {
 
 struct Rearranger<'a> {
     layouts: &'a mut Layouts,
+    layouts_path: PathBuf,
     stdout: &'a mut std::io::Stdout,
     selected: usize,
     grabbed: bool,
@@ -102,9 +103,14 @@ struct Rearranger<'a> {
 }
 
 impl<'a> Rearranger<'a> {
-    fn new(layouts: &'a mut Layouts, stdout: &'a mut std::io::Stdout) -> Self {
+    fn new(
+        layouts: &'a mut Layouts,
+        layouts_path: PathBuf,
+        stdout: &'a mut std::io::Stdout,
+    ) -> Self {
         Self {
             layouts,
+            layouts_path,
             stdout,
             selected: 0,
             grabbed: false,
@@ -163,7 +169,7 @@ impl<'a> Rearranger<'a> {
                     KeyCode::Char('s') => {
                         self.set_status(Some("Saving changes...".into()))?;
 
-                        self.layouts.save().await?;
+                        self.layouts.save(&self.layouts_path).await?;
                         self.has_changes = false;
 
                         self.set_status(Some("Changes saved successfully".into()))?;
@@ -220,7 +226,7 @@ impl<'a> Rearranger<'a> {
                 .read_line(&mut input)
                 .await?;
             if input.trim().to_lowercase() == "y" {
-                self.layouts.save().await?;
+                self.layouts.save(&self.layouts_path).await?;
                 println!("Changes saved successfully");
             } else {
                 println!("Changes discarded");

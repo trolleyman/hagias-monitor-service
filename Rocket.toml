@@ -1,4 +1,7 @@
 
+[default]
+layouts_path = "layouts.json"
+
 [release]
 address = "0.0.0.0"
 port = 5781

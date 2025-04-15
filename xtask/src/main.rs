@@ -71,11 +71,14 @@ fn main() -> Result<()> {
                 &format!("to `{}`", normalize_path(&pack_dir).display()),
                 "Packaging",
             );
+            if pack_dir.exists() {
+                std::fs::remove_dir_all(&pack_dir)?;
+            }
             std::fs::create_dir_all(&pack_dir)?;
 
             // Build the release binary
             let cargo_path = env!("CARGO");
-            print_cargo_style("release binary", "Building");
+            print_cargo_style("hagias-monitor-service", "Building");
             let status = Command::new(cargo_path)
                 .args(["build", "--release"])
                 .status()?;
@@ -95,9 +98,8 @@ fn main() -> Result<()> {
             copy_file(&binary_path, &target_path)?;
 
             // Copy layouts.json and Rocket.toml to the target directory
-            let hagias_dir = workspace_root.join("hagias-monitor-service");
             for file in ["layouts.json", "Rocket.toml"] {
-                let src_path = hagias_dir.join(file);
+                let src_path = workspace_root.join(file);
                 let target_path = pack_dir.join(file);
                 copy_file(&src_path, &target_path)?;
             }
