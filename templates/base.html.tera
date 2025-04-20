@@ -1,48 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            bg: '#1a1a1a',
-                            text: '#ffffff',
-                        },
-                        secondary: {
-                            bg: '#2d2d2d',
-                            text: '#b3b3b3',
-                        },
-                        accent: {
-                            DEFAULT: '#4a90e2',
-                            hover: '#3a7bc8',
-                        },
-                    },
-                },
-                keyframes: {
-                    slideIn: {
-                        'from': { transform: 'translateX(100%)', opacity: '0' },
-                        'to': { transform: 'translateX(0)', opacity: '1' },
-                    },
-                    slideOut: {
-                        'from': { transform: 'translateX(0)', opacity: '1' },
-                        'to': { transform: 'translateX(100%)', opacity: '0' },
-                    },
-                },
-                animation: {
-                    slideIn: 'slideIn 0.3s ease-out',
-                    slideOut: 'slideOut 0.3s ease-out',
-                },
-            },
-        }
-    </script>
+    <link href="/static/css/output.css" rel="stylesheet">
     {% block head %}{% endblock %}
 </head>
-<body class="bg-primary-bg text-primary-text">
+<body class="bg-primary-bg text-primary-text min-h-screen h-full">
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
 </body>

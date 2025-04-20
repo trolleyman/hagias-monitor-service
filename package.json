@@ -1,0 +1,17 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^4.1.4"
+  },
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css",
+    "build-release:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch"
+  },
+  "name": "hagias-monitor-service",
+  "version": "1.0.0",
+  "description": "(Hagias = friend of Hades (my desktop))",
+  "main": "tailwind.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

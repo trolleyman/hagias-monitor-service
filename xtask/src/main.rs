@@ -116,6 +116,16 @@ fn main() -> Result<()> {
                 anyhow::bail!("Failed to build release binary");
             }
 
+            // Build the CSS
+            let status = Command::new("npm")
+                .args(["run", "build-release:css"])
+                .status()?;
+
+            if !status.success() {
+                anyhow::bail!("Failed to build CSS");
+            }
+
+            // Get the workspace root
             let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
 
             // Copy the binary to the target directory
@@ -127,7 +137,7 @@ fn main() -> Result<()> {
             copy_file(&binary_path, &target_path)?;
 
             // Copy layouts.json and Rocket.toml to the target directory
-            for file in ["layouts.json", "Rocket.toml"] {
+            for file in ["layouts.json", "Rocket.toml", "static/css/output.css"] {
                 let src_path = workspace_root.join(file);
                 let target_path = pack_dir.join(file);
                 copy_file(&src_path, &target_path)?;
