@@ -9,9 +9,9 @@
   },
   "name": "hagias-monitor-service",
   "version": "1.0.0",
-  "description": "(Hagias = friend of Hades (my desktop))",
+  "description": "Hagias Monitor Service",
   "main": "tailwind.config.js",
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Callum Tolley <cgtrolley@gmail.com>",
+  "license": "MIT"
 }
