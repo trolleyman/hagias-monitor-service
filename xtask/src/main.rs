@@ -1,9 +1,12 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use clap::{Parser, Subcommand};
+use notify_debouncer_full::{DebounceEventResult, notify};
+use std::collections::HashSet;
 use std::ffi::OsStr;
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::time::Duration;
 
 const GREEN_BOLD: &str = "\x1b[1;32m";
 const RESET: &str = "\x1b[0m";
@@ -73,11 +76,11 @@ fn copy_file(src: &Path, dest: &Path) -> Result<()> {
     );
     if let Some(dest_parent) = dest_normalized.parent() {
         std::fs::create_dir_all(dest_parent)
-            .with_context(|| format!("Failed to create directory `{}`", dest_parent.display()))?;
+            .with_context(|| format!("failed to create directory `{}`", dest_parent.display()))?;
     }
     std::fs::copy(src, dest).with_context(|| {
         format!(
-            "Failed to copy `{}` to `{}`",
+            "failed to copy `{}` to `{}`",
             src_normalized.display(),
             dest_normalized.display()
         )
@@ -110,7 +113,7 @@ fn copy_dir_silent(src: &Path, dest: &Path) -> Result<()> {
         } else {
             std::fs::copy(&src_path, &dest_path).with_context(|| {
                 format!(
-                    "Failed to copy `{}` to `{}`",
+                    "failed to copy `{}` to `{}`",
                     src_path.display(),
                     dest_path.display()
                 )
@@ -186,10 +189,90 @@ fn main() -> Result<()> {
             run_command(cargo_path, args)?;
         }
         Commands::Watch { release } => {
-            todo!()
+            enum WatchEvent {
+                ChangedPaths(HashSet<PathBuf>),
+                Error(anyhow::Error),
+            }
+            let (tx, mut rx) = std::sync::mpsc::channel();
+            let mut debouncer = notify_debouncer_full::new_debouncer(
+                Duration::from_millis(200),
+                None,
+                move |res: DebounceEventResult| match res {
+                    Ok(events) => {
+                        let changed_paths = events
+                            .iter()
+                            .filter(|e| {
+                                e.event.kind.is_create()
+                                    || e.event.kind.is_modify()
+                                    || e.event.kind.is_remove()
+                            })
+                            .flat_map(|e| e.paths.clone())
+                            .collect();
+                        tx.send(WatchEvent::ChangedPaths(changed_paths)).unwrap();
+                    }
+                    Err(mut e) => {
+                        let error = match e.len() {
+                            0 => anyhow::anyhow!("watch error"),
+                            1 => anyhow::anyhow!(e.remove(0)).context("watch error"),
+                            _ => anyhow::anyhow!(e.remove(0))
+                                .context(format!("other watch errors: {:?}", e)),
+                        };
+                        tx.send(WatchEvent::Error(error)).unwrap();
+                    }
+                },
+            )
+            .context("failed to create notify debouncer")?;
+
+            let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+            debouncer
+                .watch(&workspace_root, notify::RecursiveMode::Recursive)
+                .with_context(|| format!("failed to watch {}", workspace_root.display()))?;
+
+            loop {
+                // Build CSS
+                let npm_build_css_script_name = if release {
+                    "build-release:css"
+                } else {
+                    "build:css"
+                };
+                run_command("npm.cmd", ["run", npm_build_css_script_name])?;
+
+                // Start service
+                let cargo_path = env!("CARGO");
+                let args = if release {
+                    vec!["build", "--release"]
+                } else {
+                    vec!["build"]
+                };
+                run_command(cargo_path, args)?;
+
+                // Start service
+                let mut service_path = workspace_root.join("target");
+                if release {
+                    service_path = service_path.join("release");
+                } else {
+                    service_path = service_path.join("debug");
+                }
+                service_path = service_path.join("hagias-monitor-service.exe");
+                let process = run_command_background::<&Path, &str, &[&str]>(&service_path, &[])?; // TODO
+
+                // Wait for changes
+                loop {
+                    match rx.recv() {
+                        Ok(WatchEvent::ChangedPaths(paths)) => {
+                            println!("changed paths: {:?}", paths);
+                        }
+                        Ok(WatchEvent::Error(error)) => {
+                            return Err(error.context("watch error"));
+                        }
+                        Err(e) => {
+                            return Err(anyhow::anyhow!(e).context("recv error"));
+                        }
+                    }
+                }
+            }
         }
     }
-
     Ok(())
 }
 
@@ -222,12 +305,43 @@ where
     let status = Command::new(&command)
         .args(&args)
         .status()
-        .with_context(|| format!("Failed to start command: {}", &command_full))?;
+        .with_context(|| format!("failed to start command: {}", &command_full))?;
     Ok(if !status.success() {
         anyhow::bail!(
-            "Command returned exit code {}: {}",
+            "command returned exit code {}: {}",
             status.code().unwrap_or(-1),
             &command_full
         );
     })
+}
+
+fn run_command_background<S1, S2, I>(
+    command: S1,
+    args: I,
+) -> Result<std::process::Child, anyhow::Error>
+where
+    S1: AsRef<OsStr>,
+    S2: AsRef<OsStr>,
+    I: IntoIterator<Item = S2>,
+{
+    let command = command.as_ref();
+    let command_normalized = normalize_path(&Path::new(command));
+    let args = args
+        .into_iter()
+        .map(|s| s.as_ref().to_owned())
+        .collect::<Vec<_>>();
+    let command_full = format!(
+        "{} {}",
+        command_normalized.display(),
+        args.iter()
+            .map(|arg| arg.display().to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+    print_cargo_style("Running", &command_full);
+    let process = Command::new(&command)
+        .args(&args)
+        .spawn()
+        .with_context(|| format!("failed to start command: {}", &command_full))?;
+    Ok(process)
 }
