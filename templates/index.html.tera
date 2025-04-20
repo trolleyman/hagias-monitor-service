@@ -44,9 +44,9 @@
             {% if not layout.hidden %}
             <button onclick="applyConfig('{{ layout.id }}')"
                 class="bg-secondary-bg p-6 rounded-xl flex flex-col gap-4 relative cursor-pointer border border-white/10 transition-all duration-300 hover:bg-accent hover:-translate-y-1 hover:shadow-lg">
-                <span class="absolute top-4 left-4 text-2xl bg-black/20 p-1 rounded">{{ layout.emoji | default(value="")
+                <span class="absolute top-4 left-4 text-2xl bg-black/20 p-1 rounded-sm">{{ layout.emoji | default(value="")
                     }}</span>
-                <span class="absolute top-4 right-4 text-sm text-secondary-text bg-black/20 px-2 py-1 rounded">{{
+                <span class="absolute top-4 right-4 text-sm text-secondary-text bg-black/20 px-2 py-1 rounded-sm">{{
                     layout.id }}</span>
                 <span class="text-xl font-semibold mt-5">{{ layout.name }}</span>
             </button>
@@ -107,7 +107,7 @@
             toast.appendChild(messageEl);
 
             const closeButton = document.createElement('button');
-            closeButton.className = 'flex-shrink-0 text-secondary-text hover:text-primary-text text-xl';
+            closeButton.className = 'shrink-0 text-secondary-text hover:text-primary-text text-xl';
             closeButton.innerHTML = '&times;';
             closeButton.onclick = () => this.removeToast(toast);
             toast.appendChild(closeButton);
