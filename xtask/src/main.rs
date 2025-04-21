@@ -1,8 +1,9 @@
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+use command_group::{CommandGroup, GroupChild};
 use notify_debouncer_full::{DebounceEventResult, notify};
 use std::collections::HashSet;
-use std::ffi::OsStr;
+use std::ffi::{OsStr, OsString};
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -40,14 +41,17 @@ enum Commands {
     },
 }
 
+/// Print a message in cargo style
 fn print_cargo_style(action: impl Display, message: impl Display) {
     println!("{}{:>12} {}{}", GREEN_BOLD, action, RESET, message);
 }
 
+/// Canonicalize a path, or return the original path if it fails
 fn canonicalize_or_original(path: &Path) -> PathBuf {
     std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
 }
 
+/// Normalize a path to be relative to the current directory, to make it easier to read
 fn normalize_path(path: &Path) -> PathBuf {
     let current_dir = match std::env::current_dir() {
         Ok(dir) => canonicalize_or_original(&dir),
@@ -65,6 +69,7 @@ fn normalize_path(path: &Path) -> PathBuf {
     canonical_path
 }
 
+/// Copy a file, printing a message in cargo style
 fn copy_file(src: &Path, dest: &Path) -> Result<()> {
     let src_normalized = normalize_path(src);
     let dest_normalized = normalize_path(dest);
@@ -88,6 +93,7 @@ fn copy_file(src: &Path, dest: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Copy a directory, printing a message in cargo style
 fn copy_dir(src: &Path, dest: &Path) -> Result<()> {
     let src_normalized = normalize_path(src);
     let dest_normalized = normalize_path(dest);
@@ -102,6 +108,7 @@ fn copy_dir(src: &Path, dest: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Copy a directory silently, without printing a message in cargo style
 fn copy_dir_silent(src: &Path, dest: &Path) -> Result<()> {
     std::fs::create_dir_all(dest)?;
     for entry in std::fs::read_dir(src)? {
@@ -193,7 +200,7 @@ fn main() -> Result<()> {
                 ChangedPaths(HashSet<PathBuf>),
                 Error(anyhow::Error),
             }
-            let (tx, mut rx) = std::sync::mpsc::channel();
+            let (tx, rx) = std::sync::mpsc::channel();
             let mut debouncer = notify_debouncer_full::new_debouncer(
                 Duration::from_millis(200),
                 None,
@@ -254,21 +261,35 @@ fn main() -> Result<()> {
                     service_path = service_path.join("debug");
                 }
                 service_path = service_path.join("hagias-monitor-service.exe");
-                let process = run_command_background::<&Path, &str, &[&str]>(&service_path, &[])?; // TODO
+                let mut child =
+                    run_command_background::<&Path, &str, [&str; 0]>(&service_path, [])?;
 
                 // Wait for changes
-                loop {
+                let result = loop {
                     match rx.recv() {
                         Ok(WatchEvent::ChangedPaths(paths)) => {
-                            println!("changed paths: {:?}", paths);
+                            // If path is in paths that trigger a rebuild, rebuild
+                            if paths
+                                .iter()
+                                .any(|path| path.starts_with(&workspace_root.join("src")))
+                            {
+                                break Ok(());
+                            }
                         }
                         Ok(WatchEvent::Error(error)) => {
-                            return Err(error.context("watch error"));
+                            break Err(anyhow::anyhow!(error).context("watch error"));
                         }
                         Err(e) => {
-                            return Err(anyhow::anyhow!(e).context("recv error"));
+                            break Err(anyhow::anyhow!(e).context("recv error"));
                         }
                     }
+                };
+
+                // Kill process
+                child.kill().context("failed to kill service")?;
+
+                if let Err(e) = result {
+                    return Err(e);
                 }
             }
         }
@@ -276,72 +297,68 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+/// Check if a path is in another path, accounting for `..` and other elements
+fn is_path_in(container: &Path, path: &Path) -> bool {
+    let container_normalized = canonicalize_or_original(container);
+    let path_normalized = canonicalize_or_original(path);
+    path_normalized.starts_with(&container_normalized)
+}
+
+/// Run a command as a group child
+fn run_command_debug<S1, S2, I>(command: S1, args: I) -> Result<(GroupChild, String), anyhow::Error>
+where
+    S1: AsRef<OsStr>,
+    S2: AsRef<OsStr>,
+    I: IntoIterator<Item = S2>,
+{
+    let command = command.as_ref().to_owned();
+    let command_normalized = normalize_path(&Path::new(&command));
+    let args = args
+        .into_iter()
+        .map(|s| s.as_ref().to_owned())
+        .collect::<Vec<_>>();
+    let command_full_debug = format!(
+        "{} {}",
+        command_normalized.display(),
+        args.iter()
+            .map(|arg| arg.display().to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+    print_cargo_style("Running", &command_full_debug);
+    let group_child = Command::new(&command)
+        .args(&args)
+        .group_spawn()
+        .with_context(|| format!("failed to start command: {}", &command_full_debug))?;
+    Ok((group_child, command_full_debug))
+}
+
+/// Run a command and wait for it to exit, throwing an error if it returns a non-zero exit code
 fn run_command<S1, S2, I>(command: S1, args: I) -> Result<(), anyhow::Error>
 where
     S1: AsRef<OsStr>,
     S2: AsRef<OsStr>,
     I: IntoIterator<Item = S2>,
 {
-    let command = command.as_ref();
-    let command_normalized = normalize_path(&Path::new(command));
-    let args = args
-        .into_iter()
-        .map(|s| s.as_ref().to_owned())
-        .collect::<Vec<_>>();
-    let command_full = format!(
-        "{} {}",
-        command_normalized.display(),
-        args.iter()
-            .map(|arg| arg.display().to_string())
-            .map(|arg| if arg.contains(" ") {
-                format!("\"{}\"", arg)
-            } else {
-                arg
-            })
-            .collect::<Vec<_>>()
-            .join(" ")
-    );
-    print_cargo_style("Running", &command_full);
-    let status = Command::new(&command)
-        .args(&args)
-        .status()
-        .with_context(|| format!("failed to start command: {}", &command_full))?;
+    let (mut group_child, command_full_debug) = run_command_debug(command, args)?;
+    let status = group_child
+        .wait()
+        .with_context(|| format!("failed to wait for command: {}", &command_full_debug))?;
     Ok(if !status.success() {
         anyhow::bail!(
             "command returned exit code {}: {}",
             status.code().unwrap_or(-1),
-            &command_full
+            &command_full_debug
         );
     })
 }
 
-fn run_command_background<S1, S2, I>(
-    command: S1,
-    args: I,
-) -> Result<std::process::Child, anyhow::Error>
+/// Run a command in the background
+fn run_command_background<S1, S2, I>(command: S1, args: I) -> Result<GroupChild, anyhow::Error>
 where
     S1: AsRef<OsStr>,
     S2: AsRef<OsStr>,
     I: IntoIterator<Item = S2>,
 {
-    let command = command.as_ref();
-    let command_normalized = normalize_path(&Path::new(command));
-    let args = args
-        .into_iter()
-        .map(|s| s.as_ref().to_owned())
-        .collect::<Vec<_>>();
-    let command_full = format!(
-        "{} {}",
-        command_normalized.display(),
-        args.iter()
-            .map(|arg| arg.display().to_string())
-            .collect::<Vec<_>>()
-            .join(" ")
-    );
-    print_cargo_style("Running", &command_full);
-    let process = Command::new(&command)
-        .args(&args)
-        .spawn()
-        .with_context(|| format!("failed to start command: {}", &command_full))?;
-    Ok(process)
+    Ok(run_command_debug(command, args)?.0)
 }
