@@ -1,6 +1,5 @@
 use anyhow::{Context, Result};
 use clap::Parser;
-use config::Config;
 use rocket::fs::FileServer;
 use rocket_dyn_templates::Template;
 
@@ -27,10 +26,9 @@ pub async fn main() -> Result<()> {
 pub async fn run() -> Result<i32> {
     let args = Args::parse();
 
-    let figment = rocket::Config::figment();
-    let config = figment
-        .extract::<Config>()
-        .context("Failed to extract config")?;
+    let (figment, config) = config::get()?;
+
+    eprintln!("Config: {:#?}", config);
 
     if let Some(command) = args.command {
         if let Some(code) = command::run_command(command, &config).await? {

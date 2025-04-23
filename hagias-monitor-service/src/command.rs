@@ -15,9 +15,12 @@ use crate::{config::Config, layouts::Layouts};
 
 #[derive(Debug, Clone, clap::Subcommand)]
 pub enum Command {
-    /// Edit configuration
+    /// Edit layout configuration
     #[command(subcommand)]
     Layout(LayoutCommand),
+    /// Run as a service
+    #[command(subcommand)]
+    Service,
 }
 
 #[derive(Debug, Clone, clap::Subcommand)]
@@ -146,6 +149,9 @@ pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32
                 }
             }
         },
+        Command::Service => {
+            todo!()
+        }
     }
 }
 
