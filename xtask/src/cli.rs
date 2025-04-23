@@ -25,12 +25,14 @@ enum Commands {
         /// Whether to run the release binary
         #[arg(short, long, default_value = "false")]
         release: bool,
+        // TODO: Add `--` that allows passing args to the monitor service
     },
     /// Run the monitor service and watch for changes
     Watch {
         /// Whether to run the release binary
         #[arg(short, long, default_value = "false")]
         release: bool,
+        // TODO: Add `--` that allows passing args to the monitor service
     },
 }
 

@@ -22,7 +22,7 @@ pub async fn index(
 pub async fn apply_config(id: &str, config: &State<Config>) -> status::Custom<String> {
     match Layouts::load(&config.layouts_path.relative()).await {
         Ok(layouts) => match layouts.get_layout(&id) {
-            Some(layout) => match layout.layout.apply() {
+            Some(layout) => match layout.layout.apply(true) { // TODO: Have an /api/confirm that saves the layout to the database (or defaultable arg here)
                 Ok(_) => status::Custom(
                     Status::Accepted,
                     format!(

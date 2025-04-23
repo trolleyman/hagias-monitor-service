@@ -26,8 +26,9 @@ use windows::{
             DISPLAYCONFIG_2DREGION, DISPLAYCONFIG_ADAPTER_NAME,
             DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME, DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME,
             DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME, DISPLAYCONFIG_DEVICE_INFO_HEADER,
-            DISPLAYCONFIG_MODE_INFO, DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE, DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE,
-            DISPLAYCONFIG_MODE_INFO_TYPE_TARGET, DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO,
+            DISPLAYCONFIG_MODE_INFO, DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE,
+            DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE, DISPLAYCONFIG_MODE_INFO_TYPE_TARGET,
+            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO, DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL,
@@ -54,11 +55,12 @@ use windows::{
             DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST,
             DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE,
             DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED, DISPLAYCONFIG_SOURCE_DEVICE_NAME,
-            DISPLAYCONFIG_TARGET_DEVICE_NAME,
-            DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS, DISPLAYCONFIG_TOPOLOGY_ID, DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY,
+            DISPLAYCONFIG_TARGET_DEVICE_NAME, DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS,
+            DISPLAYCONFIG_TOPOLOGY_ID, DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY,
             DisplayConfigGetDeviceInfo, GetDisplayConfigBufferSizes, QDC_ALL_PATHS,
             QDC_DATABASE_CURRENT, QDC_ONLY_ACTIVE_PATHS, QUERY_DISPLAY_CONFIG_FLAGS,
-            QueryDisplayConfig, SDC_APPLY, SDC_USE_SUPPLIED_DISPLAY_CONFIG, SetDisplayConfig,
+            QueryDisplayConfig, SDC_APPLY, SDC_SAVE_TO_DATABASE, SDC_USE_SUPPLIED_DISPLAY_CONFIG,
+            SetDisplayConfig,
         },
         Foundation::{
             ERROR_INSUFFICIENT_BUFFER, ERROR_SUCCESS, HLOCAL, LocalFree, POINTL, WIN32_ERROR,
@@ -304,13 +306,13 @@ impl WindowsDisplayConfig {
         })
     }
 
-    pub fn apply(&self) -> Result<()> {
+    pub fn apply(&self, save_to_database: bool) -> Result<()> {
         unsafe {
-            let result = SetDisplayConfig(
-                Some(&self.paths),
-                Some(&self.modes),
-                SDC_APPLY | SDC_USE_SUPPLIED_DISPLAY_CONFIG,
-            );
+            let mut flags = SDC_APPLY | SDC_USE_SUPPLIED_DISPLAY_CONFIG;
+            if save_to_database {
+                flags |= SDC_SAVE_TO_DATABASE;
+            }
+            let result = SetDisplayConfig(Some(&self.paths), Some(&self.modes), flags);
             if result as i64 != ERROR_SUCCESS.0 as i64 {
                 bail!(
                     "SetDisplayConfig error: {}",
@@ -682,7 +684,10 @@ impl WindowsDisplayConfig {
                 }
             }
         } else {
-            bail!("Not implemented: No device path found for target mode: {:?}", target_mode);
+            bail!(
+                "Not implemented: No device path found for target mode: {:?}",
+                target_mode
+            );
         }
     }
 }

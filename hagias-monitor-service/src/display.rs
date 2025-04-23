@@ -328,12 +328,12 @@ impl DisplayLayout {
         Self::from_windows(&windows_display_config)
     }
 
-    pub fn apply(&self) -> Result<()> {
+    pub fn apply(&self, save_to_database: bool) -> Result<()> {
         let windows_display_config = self.to_windows()?;
         // println!("=== New display config ===");
         // windows_display_config.print();
         // println!("=== End of new display config ===");
-        windows_display_config.apply()
+        windows_display_config.apply(save_to_database)
     }
 
     pub fn from_windows(windows_display_config: &WindowsDisplayConfig) -> Result<Self> {

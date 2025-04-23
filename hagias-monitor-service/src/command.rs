@@ -76,7 +76,7 @@ pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32
                         "Monitor layout {} \"{}\" loaded successfully",
                         layout.id, layout.name
                     );
-                    layout.layout.apply()?;
+                    layout.layout.apply(true)?;
                     println!(
                         "Monitor layout {} \"{}\" applied successfully",
                         layout.id, layout.name
