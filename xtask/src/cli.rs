@@ -25,14 +25,18 @@ enum Commands {
         /// Whether to run the release binary
         #[arg(short, long, default_value = "false")]
         release: bool,
-        // TODO: Add `--` that allows passing args to the monitor service
+        /// Arguments to pass to the monitor service
+        #[arg(last = true)]
+        args: Vec<String>,
     },
     /// Run the monitor service and watch for changes
     Watch {
         /// Whether to run the release binary
         #[arg(short, long, default_value = "false")]
         release: bool,
-        // TODO: Add `--` that allows passing args to the monitor service
+        /// Arguments to pass to the monitor service
+        #[arg(last = true)]
+        args: Vec<String>,
     },
 }
 
@@ -86,14 +90,14 @@ pub fn run() -> Result<()> {
                 &format!("packaging into `{}`", normalize_path(&pack_dir).display()),
             );
         }
-        Commands::Run { release } => {
+        Commands::Run { release, args } => {
             // Build the CSS
             crate::command::Command::new_npm_css_build(release).run()?;
 
             // Build & run the monitor service
-            crate::command::Command::new_cargo_run(release).run()?;
+            crate::command::Command::new_cargo_run(release, args).run()?;
         }
-        Commands::Watch { release } => crate::watch::run(release)?,
+        Commands::Watch { release, args } => crate::watch::run(release, args)?,
     }
     Ok(())
 }

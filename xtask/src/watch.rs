@@ -56,7 +56,7 @@ impl watchexec::filter::Filterer for PathChangedFilterer {
     }
 }
 
-pub fn run(_release: bool) -> Result<()> {
+pub fn run(_release: bool, _args: Vec<String>) -> Result<()> {
     let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
     let (files, directories) = crate::ignore::get_unignored_files_and_directories(&workspace_root)?;
 

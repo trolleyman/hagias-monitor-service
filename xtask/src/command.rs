@@ -51,20 +51,29 @@ impl Command {
     }
 
     pub fn new_cargo_build(release: bool) -> Self {
-        let args = if release {
-            vec!["build", "--release"]
-        } else {
-            vec!["build"]
-        };
+        let mut args = vec!["build"];
+        if release {
+            args.push("--release");
+        }
         Self::new(env!("CARGO"), args)
     }
 
-    pub fn new_cargo_run(release: bool) -> Self {
-        let args = if release {
-            vec!["run", "--release"]
-        } else {
-            vec!["run"]
-        };
+    pub fn new_cargo_run<I: IntoIterator<Item = T>, T: AsRef<OsStr>>(
+        release: bool,
+        extra_args: I,
+    ) -> Self {
+        let mut args: Vec<OsString> = vec!["run".into()];
+        if release {
+            args.push("--release".into());
+        }
+        let mut appended_double_dash = false;
+        for extra_arg in extra_args {
+            if !appended_double_dash {
+                args.push("--".into());
+                appended_double_dash = true;
+            }
+            args.push(extra_arg.as_ref().to_owned());
+        }
         Self::new(env!("CARGO"), args)
     }
 

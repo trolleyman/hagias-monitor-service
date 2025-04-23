@@ -28,8 +28,6 @@ pub async fn run() -> Result<i32> {
 
     let (figment, config) = config::get()?;
 
-    eprintln!("Config: {:#?}", config);
-
     if let Some(command) = args.command {
         if let Some(code) = command::run_command(command, &config).await? {
             return Ok(code);
