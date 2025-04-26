@@ -56,7 +56,7 @@ impl watchexec::filter::Filterer for PathChangedFilterer {
     }
 }
 
-pub fn run(_release: bool, _args: Vec<String>) -> Result<()> {
+pub fn run(_release: bool, _args: Vec<String>) -> Result<i32> {
     let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
     let (files, directories) = crate::ignore::get_unignored_files_and_directories(&workspace_root)?;
 
@@ -94,6 +94,29 @@ pub fn run(_release: bool, _args: Vec<String>) -> Result<()> {
 
                 // Create running builds again
                 // action.create_job(command);
+
+                // // Build the CSS
+                // build_css(release)?;
+
+                // // Build the binary
+                // let cargo_path = env!("CARGO");
+                // let args = if release {
+                //     vec!["build", "--release"]
+                // } else {
+                //     vec!["build"]
+                // };
+                // run_command(cargo_path, args)?;
+
+                // // Start service
+                // let mut service_path = workspace_root.join("target");
+                // if release {
+                //     service_path = service_path.join("release");
+                // } else {
+                //     service_path = service_path.join("debug");
+                // }
+                // service_path = service_path.join("hagias.exe");
+                // let mut child =
+                //     run_command_background::<&Path, &str, [&str; 0]>(&service_path, [])?;
             }
 
             // If Ctrl-C is received, quit
@@ -116,32 +139,8 @@ pub fn run(_release: bool, _args: Vec<String>) -> Result<()> {
             .context("failed to join watchexec")?
             .context("failed to run watchexec")?;
 
-        Ok::<(), anyhow::Error>(())
-    })?;
-
-    // // Build the CSS
-    // build_css(release)?;
-
-    // // Build the binary
-    // let cargo_path = env!("CARGO");
-    // let args = if release {
-    //     vec!["build", "--release"]
-    // } else {
-    //     vec!["build"]
-    // };
-    // run_command(cargo_path, args)?;
-
-    // // Start service
-    // let mut service_path = workspace_root.join("target");
-    // if release {
-    //     service_path = service_path.join("release");
-    // } else {
-    //     service_path = service_path.join("debug");
-    // }
-    // service_path = service_path.join("hagias-monitor-service.exe");
-    // let mut child =
-    //     run_command_background::<&Path, &str, [&str; 0]>(&service_path, [])?;
-    Ok(())
+        Ok(0)
+    })
 }
 
 fn have_any_unignored_paths_changed(

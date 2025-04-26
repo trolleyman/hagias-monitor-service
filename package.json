@@ -7,7 +7,7 @@
     "build-release:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --minify",
     "watch:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch"
   },
-  "name": "hagias-monitor-service",
+  "name": "hagias",
   "version": "1.0.0",
   "description": "Hagias Monitor Service",
   "main": "tailwind.config.js",

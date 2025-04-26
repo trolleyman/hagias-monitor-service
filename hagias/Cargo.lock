@@ -552,7 +552,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "hagias-monitor-service"
+name = "hagias"
 version = "0.1.0"
 dependencies = [
  "anyhow",

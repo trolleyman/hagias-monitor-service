@@ -104,6 +104,16 @@ impl Command {
         Ok(())
     }
 
+    pub fn run_status(&self) -> Result<std::process::ExitStatus, anyhow::Error> {
+        let mut command = self.builder();
+        self.print_running();
+        let status = command.status().context(format!(
+            "failed to run command: {}",
+            &self.command_full_debug
+        ))?;
+        Ok(status)
+    }
+
     pub fn group_spawn(&self) -> Result<GroupChild, anyhow::Error> {
         let mut command = self.builder();
         self.print_running();

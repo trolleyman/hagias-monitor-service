@@ -8,5 +8,5 @@ pub mod print;
 pub mod watch;
 
 fn main() -> Result<()> {
-    cli::run()
+    std::process::exit(cli::run()?)
 }

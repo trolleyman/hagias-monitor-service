@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use derive_more::IntoIterator;
 use serde::{Deserialize, Serialize};
 use tokio::io::AsyncReadExt;
+use tracing::debug;
 
 use crate::{
     display::DisplayLayout,
@@ -36,7 +37,7 @@ impl Layouts {
     }
 
     pub async fn load(layouts_path: &Path) -> Result<Self> {
-        eprintln!("Loading layouts from {}", layouts_path.display());
+        debug!("Loading layouts from {}", layouts_path.display());
         Self::load_private(layouts_path)
             .await
             .with_context(|| format!("Failed to load layouts at {}", layouts_path.display()))

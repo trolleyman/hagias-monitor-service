@@ -1,6 +1,6 @@
 [workspace]
-members = ["hagias-monitor-service", "xtask"]
-default-members = ["hagias-monitor-service"]
+members = ["hagias", "xtask"]
+default-members = ["hagias"]
 resolver = "3"
 
 [workspace.package]

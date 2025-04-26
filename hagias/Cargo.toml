@@ -1,5 +1,5 @@
 [package]
-name = "hagias-monitor-service"
+name = "hagias"
 version.workspace = true
 edition.workspace = true
 
@@ -25,3 +25,7 @@ windows = { version = "0.61.1", features = [
 futures = "0.3"
 tera = "1.19.1"
 rocket_dyn_templates = { version = "0.2.0", features = ["tera"] }
+windows-service = "0.8.0"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "fmt"] }
+tracing-appender = "0.2.3"

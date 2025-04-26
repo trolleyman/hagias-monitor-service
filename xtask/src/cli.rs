@@ -19,6 +19,9 @@ enum Commands {
         /// Output directory for the packaged binary
         #[arg(default_value = "pack")]
         pack_dir: PathBuf,
+        /// Whether to pack the debug binary
+        #[arg(short, long, default_value = "false")]
+        debug: bool,
     },
     /// Run the monitor service
     Run {
@@ -40,11 +43,11 @@ enum Commands {
     },
 }
 
-pub fn run() -> Result<()> {
+pub fn run() -> Result<i32> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Pack { pack_dir } => {
+        Commands::Pack { pack_dir, debug } => {
             // Create target directory if it doesn't exist
             print_cargo_style(
                 "Packaging",
@@ -56,21 +59,28 @@ pub fn run() -> Result<()> {
             std::fs::create_dir_all(&pack_dir)?;
 
             // CSS build
-            crate::command::Command::new_npm_css_build(true).run()?;
+            crate::command::Command::new_npm_css_build(!debug).run()?;
 
             // Cargo build
-            crate::command::Command::new_cargo_build(true).run()?;
+            crate::command::Command::new_cargo_build(!debug).run()?;
 
             // Get the workspace root
             let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
 
             // Copy the binary to the target directory
-            let binary_path = workspace_root
-                .join("target")
-                .join("release")
-                .join("hagias-monitor-service.exe");
-            let target_path = pack_dir.join("hagias-monitor-service.exe");
-            crate::fs::copy_file(&binary_path, &target_path)?;
+            let binary_file_names: &[&str] = if debug {
+                &["hagias.pdb", "hagias.exe"]
+            } else {
+                &["hagias.exe"]
+            };
+            for file_name in binary_file_names {
+                let binary_path = workspace_root
+                    .join("target")
+                    .join(if debug { "debug" } else { "release" })
+                    .join(file_name);
+                let target_path = pack_dir.join(file_name);
+                crate::fs::copy_file(&binary_path, &target_path)?;
+            }
 
             // Copy layouts.json and Rocket.toml to the target directory
             for file in ["layouts.json", "Rocket.toml", "static/css/output.css"] {
@@ -89,15 +99,16 @@ pub fn run() -> Result<()> {
                 "Finished",
                 &format!("packaging into `{}`", normalize_path(&pack_dir).display()),
             );
+            Ok(0)
         }
         Commands::Run { release, args } => {
             // Build the CSS
             crate::command::Command::new_npm_css_build(release).run()?;
 
             // Build & run the monitor service
-            crate::command::Command::new_cargo_run(release, args).run()?;
+            let status = crate::command::Command::new_cargo_run(release, args).run_status()?;
+            Ok(status.code().unwrap_or(1))
         }
-        Commands::Watch { release, args } => crate::watch::run(release, args)?,
+        Commands::Watch { release, args } => crate::watch::run(release, args),
     }
-    Ok(())
 }

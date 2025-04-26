@@ -10,6 +10,7 @@ use crossterm::{
 use futures::StreamExt;
 use std::{io::Write, path::PathBuf};
 use tokio::io::AsyncBufReadExt;
+use tracing::{error, info, info_span};
 
 use crate::{config::Config, layouts::Layouts};
 
@@ -20,7 +21,7 @@ pub enum Command {
     Layout(LayoutCommand),
     /// Run as a service
     #[command(subcommand)]
-    Service,
+    Service(ServiceCommand),
 }
 
 #[derive(Debug, Clone, clap::Subcommand)]
@@ -56,101 +57,146 @@ pub enum LayoutCommand {
     },
 }
 
+#[derive(Debug, Clone, clap::Subcommand)]
+pub enum ServiceCommand {
+    /// Run the service
+    Run,
+    /// Register the service
+    Register {
+        /// Force the registration of the new service (overwrite existing service)
+        #[arg(short, long)]
+        force: bool,
+    },
+}
+
 pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
-    match command {
-        Command::Layout(layout_command) => match layout_command {
-            LayoutCommand::Store { id, name, emoji } => {
-                // TODO: Lock layouts
-                println!("Loading layouts...");
-                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                layouts.add_current(&id, &name, emoji.as_deref()).await?;
+    let _ = info_span!("command::run", command = ?command).entered();
+    let result = match command {
+        Command::Layout(layout_command) => run_layout_command(config, layout_command).await,
+        Command::Service(service_command) => run_service_command(config, service_command).await,
+    };
+    if let Err(ref e) = result {
+        error!("Command failed: {}", e);
+    }
+    result
+}
+
+async fn run_layout_command(
+    config: &Config,
+    layout_command: LayoutCommand,
+) -> std::result::Result<Option<i32>, anyhow::Error> {
+    match layout_command {
+        LayoutCommand::Store { id, name, emoji } => {
+            // TODO: Lock layouts
+            info!("Loading layouts...");
+            let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+            layouts.add_current(&id, &name, emoji.as_deref()).await?;
+            layouts.save(&config.layouts_path.relative()).await?;
+            info!("Monitor layout {} \"{}\" stored successfully", id, name);
+            Ok(Some(0))
+        }
+        LayoutCommand::Apply { id } => {
+            let layouts = Layouts::load(&config.layouts_path.relative()).await?;
+            let layout = layouts.get_layout(&id);
+            if let Some(layout) = layout {
+                info!(
+                    "Monitor layout {} \"{}\" loaded successfully",
+                    layout.id, layout.name
+                );
+                layout.layout.apply(true)?;
+                info!(
+                    "Monitor layout {} \"{}\" applied successfully",
+                    layout.id, layout.name
+                );
+                Ok(Some(0))
+            } else {
+                error!("Monitor layout {} not found", id);
+                Ok(Some(1))
+            }
+        }
+        LayoutCommand::List => {
+            let layouts = Layouts::load(&config.layouts_path.relative()).await?;
+            if layouts.is_empty() {
+                info!("No monitor configurations found");
+            } else {
+                info!("Available monitor configurations:");
+                for layout in layouts {
+                    info!(
+                        "  {} - {:?}{}{}",
+                        layout.id,
+                        layout.name,
+                        layout
+                            .emoji
+                            .map(|s| format!(" ({})", s))
+                            .unwrap_or_default(),
+                        if layout.hidden { " [hidden]" } else { "" }
+                    );
+                }
+            }
+            Ok(Some(0))
+        }
+        LayoutCommand::Rearrange => {
+            let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+            if layouts.is_empty() {
+                error!("No monitor configurations found to rearrange");
+                return Ok(Some(1));
+            }
+            let mut stdout = std::io::stdout();
+            let mut rearranger =
+                Rearranger::new(&mut layouts, config.layouts_path.relative(), &mut stdout);
+            rearranger.run().await?;
+            Ok(Some(0))
+        }
+        LayoutCommand::Hide { id } => {
+            let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+            if let Some(layout) = layouts.get_layout_mut(&id) {
+                let id = layout.id.clone();
+                let name = layout.name.clone();
+                layout.hidden = true;
                 layouts.save(&config.layouts_path.relative()).await?;
-                println!("Monitor layout {} \"{}\" stored successfully", id, name);
+                info!("Monitor layout {} \"{}\" hidden successfully", id, name);
                 Ok(Some(0))
+            } else {
+                error!("Monitor layout {} not found", id);
+                Ok(Some(1))
             }
-            LayoutCommand::Apply { id } => {
-                let layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                let layout = layouts.get_layout(&id);
-                if let Some(layout) = layout {
-                    println!(
-                        "Monitor layout {} \"{}\" loaded successfully",
-                        layout.id, layout.name
-                    );
-                    layout.layout.apply(true)?;
-                    println!(
-                        "Monitor layout {} \"{}\" applied successfully",
-                        layout.id, layout.name
-                    );
-                    Ok(Some(0))
-                } else {
-                    println!("Monitor layout {} not found", id);
-                    Ok(Some(1))
-                }
-            }
-            LayoutCommand::List => {
-                let layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                if layouts.is_empty() {
-                    println!("No monitor configurations found");
-                } else {
-                    println!("Available monitor configurations:");
-                    for layout in layouts {
-                        println!(
-                            "  {} - {:?}{}{}",
-                            layout.id,
-                            layout.name,
-                            layout
-                                .emoji
-                                .map(|s| format!(" ({})", s))
-                                .unwrap_or_default(),
-                            if layout.hidden { " [hidden]" } else { "" }
-                        );
-                    }
-                }
+        }
+        LayoutCommand::Unhide { id } => {
+            let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+            if let Some(layout) = layouts.get_layout_mut(&id) {
+                let id = layout.id.clone();
+                let name = layout.name.clone();
+                layout.hidden = false;
+                layouts.save(&config.layouts_path.relative()).await?;
+                info!("Monitor layout {} \"{}\" unhidden successfully", id, name);
                 Ok(Some(0))
+            } else {
+                error!("Monitor layout {} not found", id);
+                Ok(Some(1))
             }
-            LayoutCommand::Rearrange => {
-                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                if layouts.is_empty() {
-                    println!("No monitor configurations found to rearrange");
-                    return Ok(Some(1));
-                }
-                let mut stdout = std::io::stdout();
-                let mut rearranger =
-                    Rearranger::new(&mut layouts, config.layouts_path.relative(), &mut stdout);
-                rearranger.run().await?;
-                Ok(Some(0))
+        }
+    }
+}
+
+async fn run_service_command(
+    _config: &Config,
+    service_command: ServiceCommand,
+) -> Result<Option<i32>> {
+    match service_command {
+        ServiceCommand::Run => {
+            info!("Running service...");
+            crate::service::run()?;
+            Ok(Some(0))
+        }
+        ServiceCommand::Register { force } => {
+            if force {
+                info!("Unregistering service if it exists...");
+                crate::service::unregister_if_exists().await?;
             }
-            LayoutCommand::Hide { id } => {
-                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                if let Some(layout) = layouts.get_layout_mut(&id) {
-                    let id = layout.id.clone();
-                    let name = layout.name.clone();
-                    layout.hidden = true;
-                    layouts.save(&config.layouts_path.relative()).await?;
-                    println!("Monitor layout {} \"{}\" hidden successfully", id, name);
-                    Ok(Some(0))
-                } else {
-                    println!("Monitor layout {} not found", id);
-                    Ok(Some(1))
-                }
-            }
-            LayoutCommand::Unhide { id } => {
-                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                if let Some(layout) = layouts.get_layout_mut(&id) {
-                    let id = layout.id.clone();
-                    let name = layout.name.clone();
-                    layout.hidden = false;
-                    layouts.save(&config.layouts_path.relative()).await?;
-                    println!("Monitor layout {} \"{}\" unhidden successfully", id, name);
-                    Ok(Some(0))
-                } else {
-                    println!("Monitor layout {} not found", id);
-                    Ok(Some(1))
-                }
-            }
-        },
-        Command::Service => {
-            todo!()
+            info!("Registering service...");
+            crate::service::register()?;
+            info!("Service registered successfully");
+            Ok(Some(0))
         }
     }
 }
