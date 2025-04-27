@@ -37,7 +37,7 @@ define_windows_service!(ffi_service_main, service_main);
 /// The entry point where execution will start on a background thread after a call to
 /// `service_dispatcher::start` from `main`.
 fn service_main(args: Vec<OsString>) {
-    let _ = info_span!("service_main").entered();
+    let _span = info_span!("service_main").entered();
     let result = crate::get_tokio_handle().block_on(async { service_main_async(args).await });
     if let Err(e) = result {
         SERVICE_RETURN
@@ -48,7 +48,7 @@ fn service_main(args: Vec<OsString>) {
 }
 
 async fn service_main_async(_args: Vec<OsString>) -> Result<()> {
-    let _ = info_span!("service_main_async").entered();
+    let _span = info_span!("service_main_async").entered();
     let (rocket, status_handle) = {
         info!("Setting up service {}", SERVICE_NAME);
         // Lock the rocket shutdown mutex so we don't access it via. the event handler while it's being set
@@ -194,7 +194,7 @@ async fn service_main_async(_args: Vec<OsString>) -> Result<()> {
 }
 
 pub fn run() -> Result<()> {
-    let _ = info_span!("service::run").entered();
+    let _span = info_span!("service::run").entered();
     // Ensure that we have exclusive access to the service
     let _service_lock = SERVICE_LOCK.lock().expect("failed to lock service lock");
 
@@ -223,7 +223,7 @@ pub fn run() -> Result<()> {
 }
 
 pub async fn unregister() -> Result<()> {
-    let _ = info_span!("service::unregister").entered();
+    let _span = info_span!("service::unregister").entered();
     let manager_access = ServiceManagerAccess::CONNECT;
     let service_manager = ServiceManager::local_computer(None::<&str>, manager_access)
         .context("failed to create service manager")?;
@@ -283,7 +283,7 @@ pub async fn unregister() -> Result<()> {
 }
 
 pub async fn unregister_if_exists() -> Result<()> {
-    let _ = info_span!("service::unregister_if_exists").entered();
+    let _span = info_span!("service::unregister_if_exists").entered();
     {
         let manager_access = ServiceManagerAccess::CONNECT;
         let service_manager = ServiceManager::local_computer(None::<&str>, manager_access)
@@ -306,7 +306,7 @@ pub async fn unregister_if_exists() -> Result<()> {
 }
 
 pub fn register() -> Result<()> {
-    let _ = info_span!("service::register").entered();
+    let _span = info_span!("service::register").entered();
     let manager_access = ServiceManagerAccess::CONNECT | ServiceManagerAccess::CREATE_SERVICE;
     let service_manager = ServiceManager::local_computer(None::<&str>, manager_access)
         .context("failed to create service manager")?;

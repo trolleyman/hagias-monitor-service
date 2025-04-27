@@ -29,3 +29,4 @@ windows-service = "0.8.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "fmt"] }
 tracing-appender = "0.2.3"
+jiff = "0.2.10"

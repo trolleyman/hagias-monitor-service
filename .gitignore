@@ -1,5 +1,6 @@
 /target
 /pack
+/logs
 
 node_modules
 static/css/output.css

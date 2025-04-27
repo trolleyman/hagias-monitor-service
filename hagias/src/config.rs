@@ -4,6 +4,7 @@ use rocket::figment::{
     value::magic::RelativePathBuf,
 };
 use serde::Deserialize;
+use tracing::debug;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
@@ -21,5 +22,6 @@ pub fn get() -> Result<(rocket::figment::Figment, Config), anyhow::Error> {
     let config = figment
         .extract::<Config>()
         .context("Failed to extract config")?;
+    debug!(layouts_path = %config.layouts_path.relative().display(), "Loaded config");
     Ok((figment, config))
 }

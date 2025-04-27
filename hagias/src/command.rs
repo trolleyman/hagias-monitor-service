@@ -70,7 +70,7 @@ pub enum ServiceCommand {
 }
 
 pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
-    let _ = info_span!("command::run", command = ?command).entered();
+    let _span = info_span!("command::run", command = ?command).entered();
     let result = match command {
         Command::Layout(layout_command) => run_layout_command(config, layout_command).await,
         Command::Service(service_command) => run_service_command(config, service_command).await,

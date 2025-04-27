@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use rocket::fs::FileServer;
 use rocket_dyn_templates::Template;
+use tracing::debug;
 
 pub mod command;
 pub mod config;
@@ -37,7 +38,7 @@ pub struct Args {
 }
 
 pub fn main() -> Result<()> {
-    let _ = logging::setup();
+    let _logging_guard = logging::setup();
     let handle = get_tokio_handle_result()?;
     handle.block_on(async { main_async().await })
 }
@@ -57,7 +58,9 @@ pub async fn run() -> Result<i32> {
         }
     }
 
+    debug!("Running rocket");
     run_rocket(figment, config).await?;
+    debug!("Finished running rocket");
     Ok(0)
 }
 
@@ -65,12 +68,15 @@ pub fn get_rocket_build(
     figment: rocket::figment::Figment,
     config: config::Config,
 ) -> rocket::Rocket<rocket::Build> {
-    rocket::build()
+    debug!("Building rocket");
+    let rocket = rocket::build()
         .configure(figment)
         .mount("/", rocket::routes![index::index, index::apply_config])
         .mount("/static", FileServer::from("static"))
         .manage(config)
-        .attach(Template::fairing())
+        .attach(Template::fairing());
+    debug!("Built rocket");
+    rocket
 }
 
 pub async fn get_rocket_ignited(
