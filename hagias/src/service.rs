@@ -314,6 +314,132 @@ async fn wait_until_service_state_is(
     }
 }
 
+pub async fn unregister_if_exists() -> Result<()> {
+    let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
+    if let Some(service) = get_service_opt(
+        &service_manager,
+        ServiceAccess::QUERY_STATUS | ServiceAccess::STOP | ServiceAccess::DELETE,
+    )? {
+        unregister_common(service_manager, service).await?;
+    } else {
+        info!("Service '{}' does not exist", SERVICE_NAME);
+    }
+    Ok(())
+}
+
+pub async fn unregister() -> Result<()> {
+    let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
+
+    let service = get_service(
+        &service_manager,
+        ServiceAccess::QUERY_STATUS | ServiceAccess::STOP | ServiceAccess::DELETE,
+    )?;
+    unregister_common(service_manager, service).await?;
+    Ok(())
+}
+
+async fn unregister_common(
+    service_manager: ServiceManager,
+    service: Service,
+) -> Result<(), anyhow::Error> {
+    info!("Deleting service '{}'", SERVICE_NAME);
+    service
+        .delete()
+        .with_context(|| format!("failed to delete service '{}'", SERVICE_NAME))?;
+    info!("Checking if service '{}' is stopped", SERVICE_NAME);
+    if query_status(&service)?.current_state != ServiceState::Stopped {
+        info!("Stopping service '{}'", SERVICE_NAME);
+        service
+            .stop()
+            .with_context(|| format!("failed to stop service '{}'", SERVICE_NAME))?;
+    } else {
+        info!("Service '{}' is already stopped", SERVICE_NAME);
+    }
+    drop(service);
+    info!("Waiting for service '{}' to be deleted", SERVICE_NAME);
+    if let Some(service) = get_service_opt(&service_manager, ServiceAccess::QUERY_STATUS)? {
+        wait_until_service_state_is(
+            &service,
+            HashSet::from([ServiceState::StopPending, ServiceState::Stopped]),
+            None,
+            DEFAULT_POLL_INTERVAL,
+            DEFAULT_TIMEOUT,
+        )
+        .await?;
+    }
+    info!("Service '{}' has been deleted", SERVICE_NAME);
+    Ok(())
+}
+
+pub async fn register(start: bool) -> Result<()> {
+    let service_manager =
+        get_service_manager(ServiceManagerAccess::CONNECT | ServiceManagerAccess::CREATE_SERVICE)?;
+
+    let service_binary_path =
+        std::env::current_exe().context("failed to get current executable path")?;
+
+    info!(
+        "Registering service {}: {}",
+        SERVICE_NAME,
+        service_binary_path.display()
+    );
+    let service_info = ServiceInfo {
+        name: OsString::from(SERVICE_NAME),
+        display_name: OsString::from(SERVICE_DISPLAY_NAME),
+        service_type: ServiceType::OWN_PROCESS,
+        start_type: ServiceStartType::AutoStart,
+        error_control: ServiceErrorControl::Normal,
+        executable_path: service_binary_path,
+        launch_arguments: vec!["service".into(), "run".into()],
+        dependencies: vec![],
+        account_name: None, // run as System
+        account_password: None,
+    };
+    let service = service_manager
+        .create_service(
+            &service_info,
+            if start {
+                ServiceAccess::CHANGE_CONFIG | ServiceAccess::QUERY_STATUS | ServiceAccess::START
+            } else {
+                ServiceAccess::CHANGE_CONFIG
+            },
+        )
+        .with_context(|| format!("failed to create service '{}'", SERVICE_NAME))?;
+    info!("Service '{}' registered", SERVICE_NAME);
+
+    info!("Setting description for service '{}'", SERVICE_NAME);
+    service
+        .set_description(SERVICE_DESCRIPTION)
+        .with_context(|| format!("failed to set description for service '{}'", SERVICE_NAME))?;
+    info!("Set description for service '{}'", SERVICE_NAME);
+
+    info!("Setting failure actions for service '{}'", SERVICE_NAME);
+    service
+        .update_failure_actions(ServiceFailureActions {
+            reset_period: ServiceFailureResetPeriod::After(Duration::from_secs(60 * 60)),
+            reboot_msg: None,
+            command: None,
+            actions: Some(vec![ServiceAction {
+                action_type: ServiceActionType::Restart,
+                delay: Duration::from_secs(60),
+            }]),
+        })
+        .with_context(|| {
+            format!(
+                "failed to set failure actions for service '{}'",
+                SERVICE_NAME
+            )
+        })?;
+    info!("Set failure actions for service '{}'", SERVICE_NAME);
+
+    if start {
+        start_common(&service).await
+    } else {
+        info!("Service '{}' registered but not started", SERVICE_NAME);
+        Ok(())
+    }
+}
+
 pub async fn stop_if_exists() -> Result<()> {
     let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
     let service = get_service_opt(
@@ -355,131 +481,12 @@ async fn stop_common(service: &Service) -> Result<()> {
     Ok(())
 }
 
-pub async fn unregister_if_exists() -> Result<()> {
-    let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
-    if let Some(service) = get_service_opt(
-        &service_manager,
-        ServiceAccess::QUERY_STATUS | ServiceAccess::STOP | ServiceAccess::DELETE,
-    )? {
-        unregister_common(service_manager, service).await?;
-    } else {
-        info!("Service '{}' does not exist", SERVICE_NAME);
-    }
-    Ok(())
-}
-
-pub async fn unregister() -> Result<()> {
-    let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
-
-    let service = get_service(
-        &service_manager,
-        ServiceAccess::QUERY_STATUS | ServiceAccess::STOP | ServiceAccess::DELETE,
-    )?;
-    unregister_common(service_manager, service).await?;
-    Ok(())
-}
-
-async fn unregister_common(
-    service_manager: ServiceManager,
-    service: Service,
-) -> Result<(), anyhow::Error> {
-    info!("Deleting service '{}'", SERVICE_NAME);
-    service
-        .delete()
-        .with_context(|| format!("failed to delete service '{}'", SERVICE_NAME))?;
-    info!("Checking if service '{}' is stopped", SERVICE_NAME);
-    if service
-        .query_status()
-        .with_context(|| format!("failed to query service '{}' status", SERVICE_NAME))?
-        .current_state
-        != ServiceState::Stopped
-    {
-        info!("Stopping service '{}'", SERVICE_NAME);
-        service
-            .stop()
-            .with_context(|| format!("failed to stop service '{}'", SERVICE_NAME))?;
-    } else {
-        info!("Service '{}' is already stopped", SERVICE_NAME);
-    }
-    drop(service);
-    info!("Waiting for service '{}' to be deleted", SERVICE_NAME);
-    if let Some(service) = get_service_opt(&service_manager, ServiceAccess::QUERY_STATUS)? {
-        wait_until_service_state_is(
-            &service,
-            HashSet::from([ServiceState::StopPending, ServiceState::Stopped]),
-            None,
-            DEFAULT_POLL_INTERVAL,
-            DEFAULT_TIMEOUT,
-        )
-        .await?;
-    }
-    info!("Service '{}' has been deleted", SERVICE_NAME);
-    Ok(())
-}
-
-pub async fn register() -> Result<()> {
-    let service_manager =
-        get_service_manager(ServiceManagerAccess::CONNECT | ServiceManagerAccess::CREATE_SERVICE)?;
-
-    let service_binary_path =
-        std::env::current_exe().context("failed to get current executable path")?;
-
-    info!(
-        "Registering service {}: {}",
-        SERVICE_NAME,
-        service_binary_path.display()
-    );
-    let service_info = ServiceInfo {
-        name: OsString::from(SERVICE_NAME),
-        display_name: OsString::from(SERVICE_DISPLAY_NAME),
-        service_type: ServiceType::OWN_PROCESS,
-        start_type: ServiceStartType::AutoStart,
-        error_control: ServiceErrorControl::Normal,
-        executable_path: service_binary_path,
-        launch_arguments: vec!["service".into(), "run".into()],
-        dependencies: vec![],
-        account_name: None, // run as System
-        account_password: None,
-    };
-    let service = service_manager
-        .create_service(
-            &service_info,
-            ServiceAccess::CHANGE_CONFIG | ServiceAccess::QUERY_STATUS | ServiceAccess::START,
-        )
-        .with_context(|| format!("failed to create service '{}'", SERVICE_NAME))?;
-    info!("Service '{}' registered", SERVICE_NAME);
-
-    info!("Setting description for service '{}'", SERVICE_NAME);
-    service
-        .set_description(SERVICE_DESCRIPTION)
-        .with_context(|| format!("failed to set description for service '{}'", SERVICE_NAME))?;
-    info!("Set description for service '{}'", SERVICE_NAME);
-
-    info!("Setting failure actions for service '{}'", SERVICE_NAME);
-    service
-        .update_failure_actions(ServiceFailureActions {
-            reset_period: ServiceFailureResetPeriod::After(Duration::from_secs(60 * 60)),
-            reboot_msg: None,
-            command: None,
-            actions: Some(vec![ServiceAction {
-                action_type: ServiceActionType::Restart,
-                delay: Duration::from_secs(60),
-            }]),
-        })
-        .with_context(|| {
-            format!(
-                "failed to set failure actions for service '{}'",
-                SERVICE_NAME
-            )
-        })?;
-    info!("Set failure actions for service '{}'", SERVICE_NAME);
-
+async fn start_common(service: &Service) -> Result<()> {
     info!("Starting service '{}'", SERVICE_NAME);
     service
         .start::<&str>(&[])
         .with_context(|| format!("failed to start service '{}'", SERVICE_NAME))?;
-    info!("Service '{}' started", SERVICE_NAME);
-    info!("Waiting for service '{}' to be running", SERVICE_NAME);
+    info!("Waiting for service '{}' to start", SERVICE_NAME);
     wait_until_service_state_is(
         &service,
         HashSet::from([ServiceState::StartPending]),
@@ -488,6 +495,75 @@ pub async fn register() -> Result<()> {
         DEFAULT_TIMEOUT,
     )
     .await?;
-    info!("Service '{}' is running", SERVICE_NAME);
+    info!("Service '{}' started", SERVICE_NAME);
     Ok(())
+}
+
+pub async fn restart() -> Result<()> {
+    let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
+    let service = get_service(
+        &service_manager,
+        ServiceAccess::QUERY_STATUS | ServiceAccess::STOP | ServiceAccess::START,
+    )?;
+    let current_status = query_status(&service)?;
+    match current_status.current_state {
+        ServiceState::StartPending | ServiceState::Running => {
+            stop_common(&service).await?;
+            start_common(&service).await?;
+        }
+        ServiceState::StopPending => {
+            info!("Waiting for service '{}' to stop", SERVICE_NAME);
+            wait_until_service_state_is(
+                &service,
+                HashSet::from([ServiceState::StopPending]),
+                Some(ServiceState::Stopped),
+                DEFAULT_POLL_INTERVAL,
+                DEFAULT_TIMEOUT,
+            )
+            .await?;
+            info!("Service '{}' stopped", SERVICE_NAME);
+            start_common(&service).await?;
+        }
+        ServiceState::Stopped => {
+            info!("Service '{}' is already stopped", SERVICE_NAME);
+            start_common(&service).await?;
+        }
+        _ => {
+            return Err(anyhow::anyhow!(
+                "service {} failed to restart (unexpected current state: {:?})",
+                SERVICE_NAME,
+                current_status.current_state
+            ));
+        }
+    }
+    info!("Service '{}' restarted", SERVICE_NAME);
+    Ok(())
+}
+
+pub async fn status() -> Result<Option<ServiceStatus>> {
+    let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
+    let service = get_service_opt(&service_manager, ServiceAccess::QUERY_STATUS)?;
+    if let Some(service) = service {
+        query_status_opt(&service)
+    } else {
+        Ok(None)
+    }
+}
+
+fn query_status(service: &Service) -> Result<ServiceStatus> {
+    service
+        .query_status()
+        .with_context(|| format!("failed to query service '{}' status", SERVICE_NAME))
+}
+
+fn query_status_opt(service: &Service) -> Result<Option<ServiceStatus>> {
+    let result = service.query_status();
+    if let Err(windows_service::Error::Winapi(e)) = &result {
+        if e.raw_os_error() == Some(ERROR_SERVICE_DOES_NOT_EXIST.0 as i32) {
+            return Ok(None);
+        }
+    }
+    result
+        .with_context(|| format!("failed to query service '{}' status", SERVICE_NAME))
+        .map(|s| Some(s))
 }

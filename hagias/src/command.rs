@@ -59,14 +59,25 @@ pub enum LayoutCommand {
 
 #[derive(Debug, Clone, clap::Subcommand)]
 pub enum ServiceCommand {
-    /// Run the service
-    Run,
-    /// Register the service
+    /// Register the service, starting it immediately
     Register {
         /// Force the registration of the new service (overwrite existing service)
         #[arg(short, long)]
         force: bool,
+        /// Don't start the service immediately
+        #[arg(short, long)]
+        no_start: bool,
     },
+    /// Unregister the service
+    Unregister,
+    /// Run the service
+    Run,
+    /// Stop the service
+    Stop,
+    /// Restart the service
+    Restart,
+    /// Get the status of the service
+    Status,
 }
 
 pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
@@ -184,19 +195,44 @@ async fn run_service_command(
     service_command: ServiceCommand,
 ) -> Result<Option<i32>> {
     match service_command {
-        ServiceCommand::Run => {
-            info!("Running service...");
-            crate::service::run()?;
-            Ok(Some(0))
-        }
-        ServiceCommand::Register { force } => {
+        ServiceCommand::Register { force, no_start } => {
             if force {
                 info!("Unregistering service if it exists...");
                 crate::service::unregister_if_exists().await?;
             }
             info!("Registering service...");
-            crate::service::register().await?;
+            crate::service::register(!no_start).await?;
             info!("Service registered successfully");
+            Ok(Some(0))
+        }
+        ServiceCommand::Unregister => {
+            info!("Unregistering service...");
+            crate::service::unregister().await?;
+            info!("Service unregistered successfully");
+            Ok(Some(0))
+        }
+        ServiceCommand::Run => {
+            info!("Running service...");
+            crate::service::run()?;
+            Ok(Some(0))
+        }
+        ServiceCommand::Stop => {
+            info!("Stopping service...");
+            crate::service::stop().await?;
+            info!("Service stopped successfully");
+            Ok(Some(0))
+        }
+        ServiceCommand::Restart => {
+            info!("Restarting service...");
+            crate::service::restart().await?;
+            info!("Service restarted successfully");
+            Ok(Some(0))
+        }
+        ServiceCommand::Status => {
+            match crate::service::status().await? {
+                Some(status) => info!("Service status: {:?}", status.current_state),
+                None => info!("Service is not running"),
+            }
             Ok(Some(0))
         }
     }
