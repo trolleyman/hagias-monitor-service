@@ -71,7 +71,11 @@ pub enum ServiceCommand {
     /// Unregister the service
     Unregister,
     /// Run the service
+    ///
+    /// This should only be called by Windows
     Run,
+    /// Start the service
+    Start,
     /// Stop the service
     Stop,
     /// Restart the service
@@ -214,6 +218,12 @@ async fn run_service_command(
         ServiceCommand::Run => {
             info!("Running service...");
             crate::service::run()?;
+            Ok(Some(0))
+        }
+        ServiceCommand::Start => {
+            info!("Starting service...");
+            crate::service::start().await?;
+            info!("Service started successfully");
             Ok(Some(0))
         }
         ServiceCommand::Stop => {

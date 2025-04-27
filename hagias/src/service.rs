@@ -398,11 +398,7 @@ pub async fn register(start: bool) -> Result<()> {
     let service = service_manager
         .create_service(
             &service_info,
-            if start {
-                ServiceAccess::CHANGE_CONFIG | ServiceAccess::QUERY_STATUS | ServiceAccess::START
-            } else {
-                ServiceAccess::CHANGE_CONFIG
-            },
+            ServiceAccess::CHANGE_CONFIG | ServiceAccess::QUERY_STATUS | ServiceAccess::START,
         )
         .with_context(|| format!("failed to create service '{}'", SERVICE_NAME))?;
     info!("Service '{}' registered", SERVICE_NAME);
@@ -440,17 +436,38 @@ pub async fn register(start: bool) -> Result<()> {
     }
 }
 
-pub async fn stop_if_exists() -> Result<()> {
+pub async fn start() -> Result<()> {
     let service_manager = get_service_manager(ServiceManagerAccess::CONNECT)?;
-    let service = get_service_opt(
+    let service = get_service(
         &service_manager,
-        ServiceAccess::QUERY_STATUS | ServiceAccess::STOP,
+        ServiceAccess::QUERY_STATUS | ServiceAccess::START,
     )?;
-    if let Some(service) = service {
-        stop_common(&service).await?;
+    start_common(&service).await
+}
+
+async fn start_common(service: &Service) -> Result<()> {
+    let current_state = query_status(&service)?.current_state;
+    if current_state == ServiceState::Running {
+        info!("Service '{}' is already running", SERVICE_NAME);
+        return Ok(());
+    } else if current_state == ServiceState::StartPending {
+        info!("Service '{}' is already starting", SERVICE_NAME);
     } else {
-        info!("Service '{}' does not exist", SERVICE_NAME);
+        info!("Starting service '{}'", SERVICE_NAME);
+        service
+            .start::<&str>(&[])
+            .with_context(|| format!("failed to start service '{}'", SERVICE_NAME))?;
     }
+    info!("Waiting for service '{}' to start", SERVICE_NAME);
+    wait_until_service_state_is(
+        &service,
+        HashSet::from([ServiceState::StartPending]),
+        Some(ServiceState::Running),
+        DEFAULT_POLL_INTERVAL,
+        DEFAULT_TIMEOUT,
+    )
+    .await?;
+    info!("Service '{}' started", SERVICE_NAME);
     Ok(())
 }
 
@@ -464,10 +481,18 @@ pub async fn stop() -> Result<()> {
 }
 
 async fn stop_common(service: &Service) -> Result<()> {
-    info!("Stopping service '{}'", SERVICE_NAME);
-    service
-        .stop()
-        .with_context(|| format!("failed to stop service '{}'", SERVICE_NAME))?;
+    let current_state = query_status(&service)?.current_state;
+    if current_state == ServiceState::Stopped {
+        info!("Service '{}' is already stopped", SERVICE_NAME);
+        return Ok(());
+    } else if current_state == ServiceState::StopPending {
+        info!("Service '{}' is already stopping", SERVICE_NAME);
+    } else {
+        info!("Stopping service '{}'", SERVICE_NAME);
+        service
+            .stop()
+            .with_context(|| format!("failed to stop service '{}'", SERVICE_NAME))?;
+    }
     info!("Waiting for service '{}' to stop", SERVICE_NAME);
     wait_until_service_state_is(
         &service,
@@ -478,24 +503,6 @@ async fn stop_common(service: &Service) -> Result<()> {
     )
     .await?;
     info!("Service '{}' stopped", SERVICE_NAME);
-    Ok(())
-}
-
-async fn start_common(service: &Service) -> Result<()> {
-    info!("Starting service '{}'", SERVICE_NAME);
-    service
-        .start::<&str>(&[])
-        .with_context(|| format!("failed to start service '{}'", SERVICE_NAME))?;
-    info!("Waiting for service '{}' to start", SERVICE_NAME);
-    wait_until_service_state_is(
-        &service,
-        HashSet::from([ServiceState::StartPending]),
-        Some(ServiceState::Running),
-        DEFAULT_POLL_INTERVAL,
-        DEFAULT_TIMEOUT,
-    )
-    .await?;
-    info!("Service '{}' started", SERVICE_NAME);
     Ok(())
 }
 
