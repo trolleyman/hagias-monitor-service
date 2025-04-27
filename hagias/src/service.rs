@@ -496,7 +496,7 @@ async fn stop_common(service: &Service) -> Result<()> {
     info!("Waiting for service '{}' to stop", SERVICE_NAME);
     wait_until_service_state_is(
         &service,
-        HashSet::from([ServiceState::StopPending]),
+        HashSet::from([ServiceState::Running, ServiceState::StopPending]),
         Some(ServiceState::Stopped),
         DEFAULT_POLL_INTERVAL,
         DEFAULT_TIMEOUT,
