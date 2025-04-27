@@ -195,7 +195,7 @@ async fn run_layout_command(
 }
 
 async fn run_service_command(
-    _config: &Config,
+    config: &Config,
     service_command: ServiceCommand,
 ) -> Result<Option<i32>> {
     match service_command {
@@ -207,6 +207,12 @@ async fn run_service_command(
             info!("Registering service...");
             crate::service::register(!no_start).await?;
             info!("Service registered successfully");
+            if !no_start {
+                info!(
+                    "Hagias should be now available at http://localhost:{}",
+                    config.port
+                );
+            }
             Ok(Some(0))
         }
         ServiceCommand::Unregister => {
@@ -224,6 +230,10 @@ async fn run_service_command(
             info!("Starting service...");
             crate::service::start().await?;
             info!("Service started successfully");
+            info!(
+                "Hagias should be now available at http://localhost:{}",
+                config.port
+            );
             Ok(Some(0))
         }
         ServiceCommand::Stop => {
@@ -236,6 +246,10 @@ async fn run_service_command(
             info!("Restarting service...");
             crate::service::restart().await?;
             info!("Service restarted successfully");
+            info!(
+                "Hagias should be now available at http://localhost:{}",
+                config.port
+            );
             Ok(Some(0))
         }
         ServiceCommand::Status => {

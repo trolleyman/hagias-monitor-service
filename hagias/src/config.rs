@@ -11,6 +11,7 @@ pub struct Config {
     pub layouts_path: RelativePathBuf,
     pub static_dir: RelativePathBuf,
     pub template_dir: RelativePathBuf,
+    pub port: u16,
 }
 
 pub fn get() -> Result<(rocket::figment::Figment, Config), anyhow::Error> {
@@ -35,5 +36,6 @@ pub fn get() -> Result<(rocket::figment::Figment, Config), anyhow::Error> {
         "  template_dir: {}",
         config.template_dir.relative().display()
     );
+    debug!("  port: {}", config.port);
     Ok((figment, config))
 }
