@@ -5,7 +5,12 @@ use tracing_subscriber::{
 
 pub fn setup() -> tracing_appender::non_blocking::WorkerGuard {
     // Configure file logging
-    let file_appender = tracing_appender::rolling::daily("logs", "app.log"); // Log to logs/app.log.YYYY-MM-DD
+    let root_directory = std::env::current_exe()
+        .ok()
+        .and_then(|f| f.parent().map(|p| p.to_owned()))
+        .unwrap_or(".".into());
+    let log_directory = root_directory.join("logs");
+    let file_appender = tracing_appender::rolling::daily(&log_directory, "app.log"); // Log to logs/app.log.YYYY-MM-DD
     let (non_blocking_writer, guard) = tracing_appender::non_blocking(file_appender);
 
     // Configure console logging with simple format and info+ level
@@ -44,7 +49,11 @@ pub fn setup() -> tracing_appender::non_blocking::WorkerGuard {
         // .with(tracing_log::LogTracer::builder().init().unwrap()) // Check if needed
         .init(); // Set as global subscriber
 
-    debug!("Logging initialized");
+    debug!("Logging initialized in {}", log_directory.display());
+    debug!(
+        "Current directory: {}",
+        std::env::current_dir().unwrap_or(".".into()).display()
+    );
 
     // Keep the guard (_guard) in scope - dropping it stops the background writer.
     // If setting up tracing in `main`, you can just leak the guard:

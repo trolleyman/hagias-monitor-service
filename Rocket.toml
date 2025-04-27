@@ -1,6 +1,8 @@
 
 [default]
 layouts_path = "layouts.json"
+template_dir = "templates"
+static_dir = "static"
 
 [release]
 address = "0.0.0.0"

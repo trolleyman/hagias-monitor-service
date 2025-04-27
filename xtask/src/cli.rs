@@ -68,12 +68,7 @@ pub fn run() -> Result<i32> {
             let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
 
             // Copy the binary to the target directory
-            let binary_file_names: &[&str] = if debug {
-                &["hagias.pdb", "hagias.exe"]
-            } else {
-                &["hagias.exe"]
-            };
-            for file_name in binary_file_names {
+            for file_name in ["hagias.pdb", "hagias.exe"] {
                 let binary_path = workspace_root
                     .join("target")
                     .join(if debug { "debug" } else { "release" })

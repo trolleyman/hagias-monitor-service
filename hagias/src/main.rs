@@ -49,6 +49,7 @@ pub async fn main_async() -> Result<()> {
 
 pub async fn run() -> Result<i32> {
     let args = Args::parse();
+    debug!("Running: {:?}", args);
 
     let (figment, config) = config::get()?;
 
@@ -72,7 +73,7 @@ pub fn get_rocket_build(
     let rocket = rocket::build()
         .configure(figment)
         .mount("/", rocket::routes![index::index, index::apply_config])
-        .mount("/static", FileServer::from("static"))
+        .mount("/static", FileServer::from(config.static_dir.relative()))
         .manage(config)
         .attach(Template::fairing());
     debug!("Built rocket");

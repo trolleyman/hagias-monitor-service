@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context as _, Result};
 use crossterm::{
     QueueableCommand,
     cursor::{Hide, MoveToColumn, MoveToPreviousLine, Show},
@@ -10,7 +10,7 @@ use crossterm::{
 use futures::StreamExt;
 use std::{io::Write, path::PathBuf};
 use tokio::io::AsyncBufReadExt;
-use tracing::{error, info, info_span};
+use tracing::{error, info};
 
 use crate::{config::Config, layouts::Layouts};
 
@@ -70,7 +70,8 @@ pub enum ServiceCommand {
 }
 
 pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32>> {
-    let _span = info_span!("command::run", command = ?command).entered();
+    let command_debug = format!("{:?}", command);
+    info!("Running command: {}", command_debug);
     let result = match command {
         Command::Layout(layout_command) => run_layout_command(config, layout_command).await,
         Command::Service(service_command) => run_service_command(config, service_command).await,
@@ -78,7 +79,7 @@ pub async fn run_command(command: Command, config: &Config) -> Result<Option<i32
     if let Err(ref e) = result {
         error!("Command failed: {}", e);
     }
-    result
+    result.with_context(|| format!("Command failed: {}", command_debug))
 }
 
 async fn run_layout_command(
@@ -194,7 +195,7 @@ async fn run_service_command(
                 crate::service::unregister_if_exists().await?;
             }
             info!("Registering service...");
-            crate::service::register()?;
+            crate::service::register().await?;
             info!("Service registered successfully");
             Ok(Some(0))
         }
