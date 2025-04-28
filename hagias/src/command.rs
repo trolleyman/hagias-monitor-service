@@ -156,7 +156,7 @@ async fn run_layout_command(
                         layout
                             .emoji
                             .as_ref()
-                            .map(|s| format!(" ({})", s))
+                            .map(|s| format!(" {}", s))
                             .unwrap_or_default(),
                     );
                 }
