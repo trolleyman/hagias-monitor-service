@@ -92,6 +92,14 @@ impl Layouts {
         Some(self.0.remove(index))
     }
 
+    pub fn get_layout_by_index(&self, index: usize) -> Option<&NamedLayout> {
+        self.0.get(index)
+    }
+
+    pub fn get_layout_by_index_mut(&mut self, index: usize) -> Option<&mut NamedLayout> {
+        self.0.get_mut(index)
+    }
+
     pub fn get_layout(&self, id: &str) -> Option<&NamedLayout> {
         self.0.iter().find(|l| l.id == id)
     }

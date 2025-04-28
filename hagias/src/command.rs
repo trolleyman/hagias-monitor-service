@@ -113,7 +113,17 @@ async fn run_layout_command(
         }
         LayoutCommand::Apply { id } => {
             let layouts = Layouts::load(&config.layouts_path.relative()).await?;
-            let layout = layouts.get_layout(&id);
+            let layout = id
+                .parse::<usize>()
+                .ok()
+                .map(|index| {
+                    if index == 0 {
+                        None
+                    } else {
+                        layouts.get_layout_by_index(index - 1)
+                    }
+                })
+                .unwrap_or_else(|| layouts.get_layout(&id));
             if let Some(layout) = layout {
                 info!(
                     "Monitor layout {} \"{}\" loaded successfully",
@@ -136,16 +146,18 @@ async fn run_layout_command(
                 info!("No monitor configurations found");
             } else {
                 info!("Available monitor configurations:");
-                for layout in layouts {
+                for (i, layout) in layouts.iter().enumerate() {
                     info!(
-                        "  {} - {:?}{}{}",
+                        "  {}. {} - {:?}{}{}",
+                        i + 1,
                         layout.id,
                         layout.name,
+                        if layout.hidden { " [hidden]" } else { "" },
                         layout
                             .emoji
+                            .as_ref()
                             .map(|s| format!(" ({})", s))
                             .unwrap_or_default(),
-                        if layout.hidden { " [hidden]" } else { "" }
                     );
                 }
             }
