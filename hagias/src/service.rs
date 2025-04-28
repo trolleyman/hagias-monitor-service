@@ -6,7 +6,7 @@ use std::{
 
 use anyhow::{Context, Result};
 use rocket::fairing::AdHoc;
-use tracing::info;
+use tracing::{info, warn};
 use windows::Win32::Foundation::ERROR_SERVICE_DOES_NOT_EXIST;
 use windows_service::{
     define_windows_service,
@@ -126,7 +126,7 @@ async fn service_main_async(_args: Vec<OsString>) -> Result<()> {
                         wait_hint: Duration::default(),
                         process_id: None,
                     }) {
-                        eprintln!("failed to set service status: {}", e);
+                        warn!("failed to set service status: {}", e);
                         r.shutdown().notify();
                     }
                 })

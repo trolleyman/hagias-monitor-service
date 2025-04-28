@@ -330,9 +330,6 @@ impl DisplayLayout {
 
     pub fn apply(&self, save_to_database: bool) -> Result<()> {
         let windows_display_config = self.to_windows()?;
-        // println!("=== New display config ===");
-        // windows_display_config.print();
-        // println!("=== End of new display config ===");
         windows_display_config.apply(save_to_database)
     }
 
@@ -344,9 +341,6 @@ impl DisplayLayout {
 
     pub fn to_windows(&self) -> Result<WindowsDisplayConfig> {
         let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
-        // println!("=== Existing display config ===");
-        // windows_display_config.print();
-        // println!("=== End of existing display config ===");
 
         let mut new_windows_modes = Vec::new();
         let mut new_windows_paths = Vec::new();

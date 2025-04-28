@@ -8,6 +8,7 @@ use std::{
 
 use anyhow::{Result, anyhow, bail};
 use serde::{Deserialize, Serialize};
+use tracing::debug;
 use unit_enum::UnitEnum;
 use windows::{
     Wdk::Graphics::Direct3D::{
@@ -340,41 +341,41 @@ impl WindowsDisplayConfig {
     }
 
     fn print_mode(&self, i: usize, mode: &DISPLAYCONFIG_MODE_INFO) {
-        println!("Display Mode #{}", i);
-        println!("  ID: {:?}", mode.id);
-        println!("  Adapter ID: {}", self.format_adapter_id(mode.adapterId));
-        println!("  Info Type: {:?}", mode.infoType);
+        debug!("Display Mode #{}", i);
+        debug!("  ID: {:?}", mode.id);
+        debug!("  Adapter ID: {}", self.format_adapter_id(mode.adapterId));
+        debug!("  Info Type: {:?}", mode.infoType);
         unsafe {
             match mode.infoType {
                 DISPLAYCONFIG_MODE_INFO_TYPE_TARGET => {
                     let target_mode = mode.Anonymous.targetMode;
-                    println!("  Target Mode:");
-                    println!("    Video Signal Info:");
-                    println!(
+                    debug!("  Target Mode:");
+                    debug!("    Video Signal Info:");
+                    debug!(
                         "      Pixel Rate: {}",
                         target_mode.targetVideoSignalInfo.pixelRate
                     );
-                    println!(
+                    debug!(
                         "      HSync Freq: {}",
                         format_rational_frequency(target_mode.targetVideoSignalInfo.hSyncFreq)
                     );
-                    println!(
+                    debug!(
                         "      VSync Freq: {}",
                         format_rational_frequency(target_mode.targetVideoSignalInfo.vSyncFreq)
                     );
-                    println!(
+                    debug!(
                         "      Active Size: {:?}",
                         target_mode.targetVideoSignalInfo.activeSize
                     );
-                    println!(
+                    debug!(
                         "      Total Size: {:?}",
                         target_mode.targetVideoSignalInfo.totalSize
                     );
-                    println!(
+                    debug!(
                         "      Video Standard: {}",
                         target_mode.targetVideoSignalInfo.Anonymous.videoStandard
                     );
-                    println!(
+                    debug!(
                         "      Scanline Ordering: {:?}",
                         target_mode.targetVideoSignalInfo.scanLineOrdering
                     );
@@ -385,11 +386,11 @@ impl WindowsDisplayConfig {
                 }
                 DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE => {
                     let source_mode = mode.Anonymous.sourceMode;
-                    println!("  Source Mode:");
-                    println!("    Width: {}", source_mode.width);
-                    println!("    Height: {}", source_mode.height);
-                    println!("    Pixel Format: {:?}", source_mode.pixelFormat);
-                    println!("    Position: {:?}", source_mode.position);
+                    debug!("  Source Mode:");
+                    debug!("    Width: {}", source_mode.width);
+                    debug!("    Height: {}", source_mode.height);
+                    debug!("    Pixel Format: {:?}", source_mode.pixelFormat);
+                    debug!("    Position: {:?}", source_mode.position);
                     self.print_source_device(&IdAndAdapterId {
                         id: mode.id,
                         adapter_id: LuidWrapper(mode.adapterId),
@@ -397,46 +398,46 @@ impl WindowsDisplayConfig {
                 }
                 DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE => {
                     let desktop_image_info = mode.Anonymous.desktopImageInfo;
-                    println!("  Desktop Image Info:");
-                    println!(
+                    debug!("  Desktop Image Info:");
+                    debug!(
                         "    Path Source Size: {:?}",
                         desktop_image_info.PathSourceSize
                     );
-                    println!(
+                    debug!(
                         "    Desktop Image Region: {:?}",
                         desktop_image_info.DesktopImageRegion
                     );
-                    println!(
+                    debug!(
                         "    Desktop Image Clip: {:?}",
                         desktop_image_info.DesktopImageClip
                     );
                 }
                 _ => {
-                    println!("  <Unknown Mode>");
+                    debug!("  <Unknown Mode>");
                 }
             }
         }
-        println!();
+        debug!("");
     }
 
     fn print_path(&self, i: usize, path: &DISPLAYCONFIG_PATH_INFO) {
-        println!("Display Path #{}", i);
+        debug!("Display Path #{}", i);
         self.print_path_source(path);
         self.print_path_target(path);
-        println!("  Flags: 0x{:x}", path.flags);
+        debug!("  Flags: 0x{:x}", path.flags);
         if path.flags & DISPLAYCONFIG_PATH_ACTIVE != 0 {
-            println!("    DISPLAYCONFIG_PATH_ACTIVE");
+            debug!("    DISPLAYCONFIG_PATH_ACTIVE");
         }
         if path.flags & DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE != 0 {
-            println!("    DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE");
+            debug!("    DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE");
         }
-        println!();
+        debug!("");
     }
 
     fn print_path_source(&self, path: &DISPLAYCONFIG_PATH_INFO) {
-        println!("  Source:");
-        println!("    ID: {}", path.sourceInfo.id);
-        println!(
+        debug!("  Source:");
+        debug!("    ID: {}", path.sourceInfo.id);
+        debug!(
             "    Adapter ID: {}",
             self.format_adapter_id(path.sourceInfo.adapterId)
         );
@@ -445,31 +446,31 @@ impl WindowsDisplayConfig {
                 let clone_group_id =
                     (path.sourceInfo.Anonymous.Anonymous._bitfield & 0xffff0000) >> 16;
                 if clone_group_id == DISPLAYCONFIG_PATH_CLONE_GROUP_INVALID {
-                    println!("    Clone Group ID: Invalid");
+                    debug!("    Clone Group ID: Invalid");
                 } else {
-                    println!("    Clone Group ID: {}", clone_group_id);
+                    debug!("    Clone Group ID: {}", clone_group_id);
                 }
                 let source_mode_info_idx =
                     path.sourceInfo.Anonymous.Anonymous._bitfield & 0x0000ffff;
                 if source_mode_info_idx == DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID {
-                    println!("    Source Mode Info Index: Invalid");
+                    debug!("    Source Mode Info Index: Invalid");
                 } else {
-                    println!("    Source Mode Info Index: {}", source_mode_info_idx);
+                    debug!("    Source Mode Info Index: {}", source_mode_info_idx);
                 }
             } else {
                 if path.sourceInfo.Anonymous.modeInfoIdx == DISPLAYCONFIG_PATH_MODE_IDX_INVALID {
-                    println!("    Mode Info Index: Invalid");
+                    debug!("    Mode Info Index: Invalid");
                 } else {
-                    println!(
+                    debug!(
                         "    Mode Info Index: {}",
                         path.sourceInfo.Anonymous.modeInfoIdx
                     );
                 }
             }
         }
-        println!("    Status Flags: 0x{:x}", path.sourceInfo.statusFlags);
+        debug!("    Status Flags: 0x{:x}", path.sourceInfo.statusFlags);
         if path.sourceInfo.statusFlags & DISPLAYCONFIG_SOURCE_IN_USE != 0 {
-            println!("      DISPLAYCONFIG_SOURCE_IN_USE");
+            debug!("      DISPLAYCONFIG_SOURCE_IN_USE");
         }
         self.print_source_device(&IdAndAdapterId {
             id: path.sourceInfo.id,
@@ -479,20 +480,20 @@ impl WindowsDisplayConfig {
 
     fn print_source_device(&self, id_and_adapter_id: &IdAndAdapterId) {
         if let Some(source_device_name) = self.source_device_names.get(id_and_adapter_id) {
-            println!("    Source Device:");
-            println!(
+            debug!("    Source Device:");
+            debug!(
                 "      GDI Device Name: {:?}",
                 wchar_null_terminated_to_os_string(&source_device_name.viewGdiDeviceName)
             );
         } else {
-            println!("    Source Device: <Unknown>");
+            debug!("    Source Device: <Unknown>");
         }
     }
 
     fn print_path_target(&self, path: &DISPLAYCONFIG_PATH_INFO) {
-        println!("  Target:");
-        println!("    ID: {}", path.targetInfo.id);
-        println!(
+        debug!("  Target:");
+        debug!("    ID: {}", path.targetInfo.id);
+        debug!(
             "    Adapter ID: {}",
             self.format_adapter_id(path.targetInfo.adapterId)
         );
@@ -501,64 +502,64 @@ impl WindowsDisplayConfig {
                 let desktop_mode_info_idx =
                     (path.targetInfo.Anonymous.Anonymous._bitfield & 0xffff0000) >> 16;
                 if desktop_mode_info_idx == DISPLAYCONFIG_PATH_DESKTOP_IMAGE_IDX_INVALID {
-                    println!("    Desktop Mode ID: Invalid");
+                    debug!("    Desktop Mode ID: Invalid");
                 } else {
-                    println!("    Desktop Mode ID: {}", desktop_mode_info_idx);
+                    debug!("    Desktop Mode ID: {}", desktop_mode_info_idx);
                 }
                 let target_mode_info_idx =
                     path.sourceInfo.Anonymous.Anonymous._bitfield & 0x0000ffff;
                 if target_mode_info_idx == DISPLAYCONFIG_PATH_TARGET_MODE_IDX_INVALID {
-                    println!("    Target Mode Info Index: Invalid");
+                    debug!("    Target Mode Info Index: Invalid");
                 } else {
-                    println!("    Target Mode Info Index: {}", target_mode_info_idx);
+                    debug!("    Target Mode Info Index: {}", target_mode_info_idx);
                 }
             } else {
                 if path.sourceInfo.Anonymous.modeInfoIdx == DISPLAYCONFIG_PATH_MODE_IDX_INVALID {
-                    println!("    Mode Info Index: Invalid");
+                    debug!("    Mode Info Index: Invalid");
                 } else {
-                    println!(
+                    debug!(
                         "    Mode Info Index: {}",
                         path.sourceInfo.Anonymous.modeInfoIdx
                     );
                 }
             }
         }
-        println!(
+        debug!(
             "    Output Technology: {}",
             format_output_technology(path.targetInfo.outputTechnology)
         );
-        println!("    Rotation: {:?}", path.targetInfo.rotation);
-        println!("    Scaling: {:?}", path.targetInfo.scaling);
-        println!(
+        debug!("    Rotation: {:?}", path.targetInfo.rotation);
+        debug!("    Scaling: {:?}", path.targetInfo.scaling);
+        debug!(
             "    Refresh Rate: {}",
             format_rational_frequency(path.targetInfo.refreshRate)
         );
-        println!(
+        debug!(
             "    Scanline Ordering: {:?}",
             path.targetInfo.scanLineOrdering
         );
-        println!(
+        debug!(
             "    Target Available: {}",
             path.targetInfo.targetAvailable.as_bool()
         );
-        println!("    Status Flags: 0x{:x}", path.targetInfo.statusFlags);
+        debug!("    Status Flags: 0x{:x}", path.targetInfo.statusFlags);
         if path.targetInfo.statusFlags & DISPLAYCONFIG_TARGET_IN_USE != 0 {
-            println!("      DISPLAYCONFIG_TARGET_IN_USE");
+            debug!("      DISPLAYCONFIG_TARGET_IN_USE");
         }
         if path.targetInfo.statusFlags & DISPLAYCONFIG_TARGET_FORCIBLE != 0 {
-            println!("      DISPLAYCONFIG_TARGET_FORCIBLE");
+            debug!("      DISPLAYCONFIG_TARGET_FORCIBLE");
         }
         if path.targetInfo.statusFlags & DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_BOOT != 0 {
-            println!("      DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_BOOT");
+            debug!("      DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_BOOT");
         }
         if path.targetInfo.statusFlags & DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_PATH != 0 {
-            println!("      DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_PATH");
+            debug!("      DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_PATH");
         }
         if path.targetInfo.statusFlags & DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_SYSTEM != 0 {
-            println!("      DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_SYSTEM");
+            debug!("      DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_SYSTEM");
         }
         if path.targetInfo.statusFlags & DISPLAYCONFIG_TARGET_IS_HMD != 0 {
-            println!("      DISPLAYCONFIG_TARGET_IS_HMD");
+            debug!("      DISPLAYCONFIG_TARGET_IS_HMD");
         }
         self.print_target_device(&IdAndAdapterId {
             id: path.targetInfo.id,
@@ -568,47 +569,47 @@ impl WindowsDisplayConfig {
 
     fn print_target_device(&self, id_and_adapter_id: &IdAndAdapterId) {
         if let Some(target_device_name) = self.target_device_names.get(id_and_adapter_id) {
-            println!("    Target Device:");
-            println!("      Flags: 0x{:x}", unsafe {
+            debug!("    Target Device:");
+            debug!("      Flags: 0x{:x}", unsafe {
                 target_device_name.flags.Anonymous.value
             });
             if is_target_device_friendly_name_from_edid(target_device_name.flags) {
-                println!("        Friendly Name From EDID");
+                debug!("        Friendly Name From EDID");
             }
             if is_target_device_friendly_name_forced(target_device_name.flags) {
-                println!("        Friendly Name Forced");
+                debug!("        Friendly Name Forced");
             }
             if is_target_device_edid_ids_valid(target_device_name.flags) {
-                println!("        EDID IDs Valid");
+                debug!("        EDID IDs Valid");
             }
-            println!(
+            debug!(
                 "      Output Technology: {}",
                 format_output_technology(target_device_name.outputTechnology)
             );
             if is_target_device_edid_ids_valid(target_device_name.flags) {
-                println!(
+                debug!(
                     "      EDID Manufacture ID: 0x{:x}",
                     target_device_name.edidManufactureId
                 );
-                println!(
+                debug!(
                     "      EDID Product Code ID: 0x{:x}",
                     target_device_name.edidProductCodeId
                 );
             }
-            println!(
+            debug!(
                 "      Connector Instance: {}",
                 target_device_name.connectorInstance
             );
-            println!(
+            debug!(
                 "      Monitor Friendly Device Name: {:?}",
                 get_monitor_friendly_device_name(&target_device_name)
             );
-            println!(
+            debug!(
                 "      Monitor Device Path: {:?}",
                 get_monitor_device_path(&target_device_name)
             );
         } else {
-            println!("    Target Device: <Unknown>");
+            debug!("    Target Device: <Unknown>");
         }
     }
 
@@ -665,7 +666,7 @@ impl WindowsDisplayConfig {
             match devices_with_matching_device_path.len() {
                 0 => {
                     // Fallback
-                    println!(
+                    debug!(
                         "No matching target mode found for device path, using fallback {}: {:?}",
                         target_mode.device.id, target_mode_device_path
                     );

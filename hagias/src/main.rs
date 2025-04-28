@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use rocket::fs::FileServer;
 use rocket_dyn_templates::Template;
-use tracing::debug;
+use tracing::{debug, error, info};
 
 pub mod command;
 pub mod config;
@@ -48,7 +48,24 @@ pub async fn main_async() -> Result<()> {
 }
 
 pub async fn run() -> Result<i32> {
-    let args = Args::parse();
+    debug!(
+        "Parsing args: {:?}",
+        std::env::args_os().collect::<Vec<_>>()
+    );
+    let args = match Args::try_parse() {
+        Ok(args) => args,
+        Err(e) => {
+            let styled_string = e.render();
+            for line in styled_string.ansi().to_string().lines() {
+                if e.exit_code() == 0 {
+                    info!("{}", line);
+                } else {
+                    error!("{}", line);
+                }
+            }
+            return Ok(e.exit_code());
+        }
+    };
     debug!("Running: {:?}", args);
 
     let (figment, config) = config::get()?;

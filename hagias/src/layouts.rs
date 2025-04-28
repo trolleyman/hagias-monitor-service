@@ -56,7 +56,7 @@ impl Layouts {
     }
 
     pub async fn save(&self, layouts_path: &Path) -> Result<()> {
-        eprintln!("Saving layouts to {}", layouts_path.display());
+        debug!("Saving layouts to {}", layouts_path.display());
         self.save_private(layouts_path)
             .await
             .with_context(|| format!("Failed to save layouts at {}", layouts_path.display()))

@@ -77,13 +77,21 @@ pub fn run() -> Result<i32> {
                 crate::fs::copy_file(&binary_path, &target_path)?;
             }
 
-            // Copy layouts.json and Rocket.toml to the target directory
+            // Copy hagias/ files to the target directory
+            for file in ["hagias_autohotkey.ahk"] {
+                let src_path = workspace_root.join("hagias").join(file);
+                let target_path = pack_dir.join(file);
+                crate::fs::copy_file(&src_path, &target_path)?;
+            }
+
+            // Copy workspace files to the target directory
             for file in ["layouts.json", "Rocket.toml", "static/css/output.css"] {
                 let src_path = workspace_root.join(file);
                 let target_path = pack_dir.join(file);
                 crate::fs::copy_file(&src_path, &target_path)?;
             }
 
+            // Copy workspace directories to the target directory
             for dir in ["templates"] {
                 let src_path = workspace_root.join(dir);
                 let target_path = pack_dir.join(dir);
