@@ -22,6 +22,8 @@ pub enum Command {
     #[cfg(feature = "cec")]
     #[command(subcommand)]
     Cec(cec::Command),
+    /// Enumerate displays
+    #[cfg(feature = "enum-displays")]
     EnumDisplays,
 }
 impl Command {
@@ -33,6 +35,7 @@ impl Command {
             Command::Service(service_command) => service_command.run(config).await,
             #[cfg(feature = "cec")]
             Command::Cec(cec_command) => cec_command.run(config).await,
+            #[cfg(feature = "enum-displays")]
             Command::EnumDisplays => enum_displays::run(config).await,
         };
         if let Err(ref e) = result {
@@ -42,17 +45,17 @@ impl Command {
     }
 }
 
+#[cfg(feature = "enum-displays")]
 mod enum_displays {
     use anyhow::Result;
     use windows::{
-        Win32::{
+        core::BOOL, Win32::{
             Devices::Display::{
                 DestroyPhysicalMonitors, GetNumberOfPhysicalMonitorsFromHMONITOR, PHYSICAL_MONITOR,
             },
-            Foundation::{LPARAM, RECT},
+            Foundation::{ERROR_SUCCESS, LPARAM, RECT},
             Graphics::Gdi::{EnumDisplayMonitors, HDC, HMONITOR},
-        },
-        core::BOOL,
+        }
     };
 
     use crate::config::Config;

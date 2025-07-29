@@ -36,3 +36,4 @@ libcec-sys = { version = "8.0.0", features = ["static"], optional = true }
 
 [features]
 cec = ["dep:cec-rs", "dep:libcec-sys"]
+enum-displays = []
