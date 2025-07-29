@@ -10,7 +10,17 @@ pub fn setup() -> tracing_appender::non_blocking::WorkerGuard {
         .and_then(|f| f.parent().map(|p| p.to_owned()))
         .unwrap_or(".".into());
     let log_directory = root_directory.join("logs");
-    let file_appender = tracing_appender::rolling::daily(&log_directory, "app.log"); // Log to logs/app.log.YYYY-MM-DD
+    let time = jiff::Zoned::now();
+    let file_appender = tracing_appender::rolling::never(
+        &log_directory,
+        format!(
+            "hagias_{}_{}_{}_{}.log",
+            time.year(),
+            time.month(),
+            time.day(),
+            std::process::id()
+        ),
+    );
     let (non_blocking_writer, guard) = tracing_appender::non_blocking(file_appender);
 
     // Configure console logging with simple format and info+ level

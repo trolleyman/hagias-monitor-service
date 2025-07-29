@@ -17,6 +17,7 @@ tokio = { version = "1.44.2", features = ["io-util"] }
 unit-enum = "1.4.1"
 winapi = { version = "0.3.9", features = ["winnt"] }
 windows = { version = "0.61.1", features = [
+    "Win32_System_Console",
     "Win32_Devices_Display",
     "Win32_Graphics_Gdi",
     "Win32_System_Diagnostics_Debug",
@@ -30,3 +31,8 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "fmt"] }
 tracing-appender = "0.2.3"
 jiff = "0.2.10"
+cec-rs = { version = "12.0.0", optional = true }
+libcec-sys = { version = "8.0.0", features = ["static"], optional = true }
+
+[features]
+cec = ["dep:cec-rs", "dep:libcec-sys"]

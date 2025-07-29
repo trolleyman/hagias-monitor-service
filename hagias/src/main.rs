@@ -8,7 +8,7 @@ use rocket::fs::FileServer;
 use rocket_dyn_templates::Template;
 use tracing::{debug, error, info};
 
-pub mod command;
+pub mod cli;
 pub mod config;
 pub mod display;
 pub mod index;
@@ -32,14 +32,26 @@ pub fn get_tokio_handle() -> tokio::runtime::Handle {
     get_tokio_handle_result().expect("failed to create tokio handle")
 }
 
+#[cfg(windows)]
+fn attach_parent_console_windows() {
+    use windows::Win32::System::Console::*;
+    let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
+}
+
+#[cfg(not(windows))]
+fn attach_parent_console_windows() {
+    // no-op
+}
+
 #[derive(Debug, Clone, clap::Parser)]
 #[command(author, version, about)]
 pub struct Args {
     #[command(subcommand)]
-    command: Option<command::Command>,
+    command: Option<cli::Command>,
 }
 
 pub fn main() -> Result<()> {
+    attach_parent_console_windows();
     let _logging_guard = logging::setup();
     let handle = get_tokio_handle_result()?;
     handle.block_on(async { main_async().await })
@@ -73,7 +85,7 @@ pub async fn run() -> Result<i32> {
     let (figment, config) = config::get()?;
 
     if let Some(command) = args.command {
-        if let Some(code) = command::run_command(command, &config).await? {
+        if let Some(code) = command.run(&config).await? {
             return Ok(code);
         }
     }
