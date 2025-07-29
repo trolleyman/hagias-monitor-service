@@ -160,7 +160,7 @@
             },
             "gdi_device_name": "\\\\.\\DISPLAY3"
           },
-          "width": 4096,
+          "width": 3840,
           "height": 2160,
           "pixel_format": 4,
           "position": {
@@ -193,7 +193,7 @@
             "denominator": 1
           },
           "active_size": {
-            "x": 4096,
+            "x": 3840,
             "y": 2160
           },
           "total_size": {
@@ -272,7 +272,7 @@
             },
             "gdi_device_name": "\\\\.\\DISPLAY3"
           },
-          "width": 4096,
+          "width": 3840,
           "height": 2160,
           "pixel_format": 4,
           "position": {
@@ -373,7 +373,7 @@
             "denominator": 1
           },
           "active_size": {
-            "x": 4096,
+            "x": 3840,
             "y": 2160
           },
           "total_size": {
@@ -484,7 +484,7 @@
             },
             "gdi_device_name": "\\\\.\\DISPLAY3"
           },
-          "width": 4096,
+          "width": 3840,
           "height": 2160,
           "pixel_format": 4,
           "position": {
@@ -585,7 +585,7 @@
             "denominator": 1
           },
           "active_size": {
-            "x": 4096,
+            "x": 3840,
             "y": 2160
           },
           "total_size": {
