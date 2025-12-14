@@ -68,6 +68,10 @@ impl Layouts {
         Ok(())
     }
 
+    pub fn clear(&mut self) {
+        self.0.clear();
+    }
+
     pub async fn add_current(&mut self, id: &str, name: &str, emoji: Option<&str>) -> Result<()> {
         let windows_display_config = WindowsDisplayConfig::get(DisplayQueryType::All)?;
         let layout = DisplayLayout::from_windows(&windows_display_config)?;
@@ -98,6 +102,16 @@ impl Layouts {
 
     pub fn get_layout_by_index_mut(&mut self, index: usize) -> Option<&mut NamedLayout> {
         self.0.get_mut(index)
+    }
+
+    pub fn get_layout_by_id_or_index(&self, id_or_index: &str) -> Option<&NamedLayout> {
+        if let Some(layout) = self.get_layout(id_or_index) {
+            Some(layout)
+        } else if let Ok(index) = id_or_index.parse::<usize>() {
+            self.get_layout_by_index(index)
+        } else {
+            None
+        }
     }
 
     pub fn get_layout(&self, id: &str) -> Option<&NamedLayout> {

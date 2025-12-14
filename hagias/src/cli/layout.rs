@@ -7,7 +7,7 @@ use super::rearranger::Rearranger;
 
 #[derive(Debug, Clone, clap::Subcommand)]
 pub enum Command {
-    // Store the current monitor configuration as the config named `name`
+    /// Store the current monitor configuration as the config named `name`
     Store {
         /// The ID of the layout
         id: String,
@@ -17,21 +17,28 @@ pub enum Command {
         #[arg(short, long)]
         emoji: Option<String>,
     },
-    // Apply the config with ID `id`
+    /// Clear all stored layouts
+    Clear,
+    /// Remove the layout with ID `id`
+    Remove {
+        /// The ID of the layout to remove
+        id: String,
+    },
+    /// Apply the config with ID `id`
     Apply {
         /// The ID of the layout
         id: String,
     },
-    // List all available configurations
+    /// List all available configurations
     List,
-    // Interactively rearrange monitor layouts
+    /// Interactively rearrange monitor layouts
     Rearrange,
-    // Hide a layout
+    /// Hide a layout
     Hide {
         /// The ID of the layout to hide
         id: String,
     },
-    // Unhide a layout
+    /// Unhide a layout
     Unhide {
         /// The ID of the layout to unhide
         id: String,
@@ -50,19 +57,31 @@ impl Command {
                 info!("Monitor layout {} \"{}\" stored successfully", id, name);
                 Ok(Some(0))
             }
+            Command::Clear => {
+                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+                layouts.clear();
+                layouts.save(&config.layouts_path.relative()).await?;
+                info!("All monitor configurations cleared");
+                Ok(Some(0))
+            }
+            Command::Remove { id } => {
+                let mut layouts = Layouts::load(&config.layouts_path.relative()).await?;
+                if let Some(layout_id) = layouts
+                    .get_layout_by_id_or_index(&id)
+                    .map(|layout| layout.id.clone())
+                {
+                    info!("Removing monitor layout {}", layout_id);
+                    layouts.remove_layout(&layout_id);
+                    layouts.save(&config.layouts_path.relative()).await?;
+                    info!("Monitor layout {} removed successfully", layout_id);
+                } else {
+                    error!("Monitor layout {} not found", id);
+                }
+                Ok(Some(0))
+            }
             Command::Apply { id } => {
                 let layouts = Layouts::load(&config.layouts_path.relative()).await?;
-                let layout = id
-                    .parse::<usize>()
-                    .ok()
-                    .map(|index| {
-                        if index == 0 {
-                            None
-                        } else {
-                            layouts.get_layout_by_index(index - 1)
-                        }
-                    })
-                    .unwrap_or_else(|| layouts.get_layout(&id));
+                let layout = layouts.get_layout_by_id_or_index(&id);
                 if let Some(layout) = layout {
                     info!(
                         "Monitor layout {} \"{}\" loaded successfully",
