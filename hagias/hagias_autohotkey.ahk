@@ -1,11 +1,18 @@
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 
-#^1::Run %A_ScriptDir%\hagias.exe layout apply 1
-#^2::Run %A_ScriptDir%\hagias.exe layout apply 2
-#^3::Run %A_ScriptDir%\hagias.exe layout apply 3
-#^4::Run %A_ScriptDir%\hagias.exe layout apply 4
-#^5::Run %A_ScriptDir%\hagias.exe layout apply 5
-#^6::Run %A_ScriptDir%\hagias.exe layout apply 6
-#^7::Run %A_ScriptDir%\hagias.exe layout apply 7
-#^8::Run %A_ScriptDir%\hagias.exe layout apply 8
-#^9::Run %A_ScriptDir%\hagias.exe layout apply 9
+; Define the function once
+ApplyLayout(num) {
+    Run(A_ScriptDir "\hagias.exe layout apply " num)
+}
+
+; Call the function for each hotkey
+#^1::ApplyLayout(1)
+#^2::ApplyLayout(2)
+#^3::ApplyLayout(3)
+#^4::ApplyLayout(4)
+#^5::ApplyLayout(5)
+#^6::ApplyLayout(6)
+#^7::ApplyLayout(7)
+#^8::ApplyLayout(8)
+#^9::ApplyLayout(9)
