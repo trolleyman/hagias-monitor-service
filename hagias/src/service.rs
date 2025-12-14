@@ -1,13 +1,17 @@
 use std::{
     collections::HashSet,
     ffi::OsString,
+    os::windows::ffi::OsStringExt,
     time::{Duration, Instant},
 };
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use rocket::fairing::AdHoc;
 use tracing::{info, warn};
-use windows::Win32::Foundation::ERROR_SERVICE_DOES_NOT_EXIST;
+use winapi::{shared::minwindef::DWORD, um::winbase::GetUserNameW};
+use windows::Win32::Foundation::{
+    ERROR_INSUFFICIENT_BUFFER, ERROR_SERVICE_DOES_NOT_EXIST, ERROR_SUCCESS, GetLastError,
+};
 use windows_service::{
     define_windows_service,
     service::{
@@ -20,6 +24,8 @@ use windows_service::{
     service_dispatcher,
     service_manager::{ServiceManager, ServiceManagerAccess},
 };
+
+use crate::windows_util::windows_error_to_string;
 
 pub const SERVICE_NAME: &str = "hagias";
 pub const SERVICE_DISPLAY_NAME: &str = "Hagias Monitor Service";
@@ -371,6 +377,30 @@ async fn unregister_common(
     Ok(())
 }
 
+pub fn get_user_name() -> Result<OsString> {
+    let mut buffer = Vec::with_capacity(256);
+    loop {
+        let mut size = buffer.capacity() as DWORD;
+        unsafe {
+            GetUserNameW(buffer.as_mut_ptr(), &mut size);
+        }
+        let error = unsafe { GetLastError() };
+        if error == ERROR_INSUFFICIENT_BUFFER {
+            buffer.reserve(size as usize - buffer.capacity());
+            continue;
+        }
+        if error != ERROR_SUCCESS {
+            bail!(
+                "GetUserNameW failed with error {}",
+                windows_error_to_string(error)
+            );
+        }
+        unsafe { buffer.set_len(size as usize) };
+        let user_name = OsString::from_wide(&buffer[..size as usize - 1]);
+        return Ok(user_name);
+    }
+}
+
 pub async fn register(start: bool) -> Result<()> {
     let service_manager =
         get_service_manager(ServiceManagerAccess::CONNECT | ServiceManagerAccess::CREATE_SERVICE)?;
@@ -383,16 +413,18 @@ pub async fn register(start: bool) -> Result<()> {
         SERVICE_NAME,
         service_binary_path.display()
     );
+    let user_name = get_user_name()?;
+    info!("Registering as user: {}", user_name.display());
     let service_info = ServiceInfo {
         name: OsString::from(SERVICE_NAME),
         display_name: OsString::from(SERVICE_DISPLAY_NAME),
-        service_type: ServiceType::OWN_PROCESS,
+        service_type: ServiceType::USER_OWN_PROCESS,
         start_type: ServiceStartType::AutoStart,
         error_control: ServiceErrorControl::Normal,
         executable_path: service_binary_path,
         launch_arguments: vec!["service".into(), "run".into()],
         dependencies: vec![],
-        account_name: None, // run as System
+        account_name: Some(user_name),
         account_password: None,
     };
     let service = service_manager
