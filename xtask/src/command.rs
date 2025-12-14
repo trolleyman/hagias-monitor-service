@@ -41,13 +41,13 @@ impl Command {
         }
     }
 
-    pub fn new_npm_css_build(release: bool) -> Self {
-        let npm_build_css_script_name = if release {
+    pub fn new_bun_css_build(release: bool) -> Self {
+        let bun_build_css_script_name = if release {
             "build-release:css"
         } else {
             "build:css"
         };
-        Self::new("npm.cmd", ["run", npm_build_css_script_name])
+        Self::new("bun", ["run", bun_build_css_script_name])
     }
 
     pub fn new_cargo_build(release: bool) -> Self {

@@ -59,7 +59,7 @@ pub fn run() -> Result<i32> {
             std::fs::create_dir_all(&pack_dir)?;
 
             // CSS build
-            crate::command::Command::new_npm_css_build(!debug).run()?;
+            crate::command::Command::new_bun_css_build(!debug).run()?;
 
             // Cargo build
             crate::command::Command::new_cargo_build(!debug).run()?;
@@ -106,7 +106,7 @@ pub fn run() -> Result<i32> {
         }
         Commands::Run { release, args } => {
             // Build the CSS
-            crate::command::Command::new_npm_css_build(release).run()?;
+            crate::command::Command::new_bun_css_build(release).run()?;
 
             // Build & run the monitor service
             let status = crate::command::Command::new_cargo_run(release, args).run_status()?;
